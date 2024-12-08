@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:fragment="head (pageTitle, formStyle)">
+    <meta charset="UTF-8">
+    <title th:text="${pageTitle}">Hello</title>
+    <link rel="stylesheet" href="/styles/app.css">
+    <link th:if="${formStyle}" rel="stylesheet" href="/styles/forms.css">
+</head>
+
+<body>
+<header th:fragment="header">
+    <nav>
+        <ul>
+            <li><a th:href="@{/}">Home</a></li>
+            <li><a th:href="@{/playlists}">Playlists</a></li>
+            <li><a th:href="@{/logout}">Logout</a></li>
+        </ul>
+    </nav>
+</header>
+</body>
+
+</html>
