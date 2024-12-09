@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.nav-button {
+    @apply bg-gray-700 text-white p-2 rounded
+}
