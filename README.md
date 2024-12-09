@@ -2,8 +2,8 @@
 
 Group members:
 
-1. [Alex Clinton](https://github.com/BigYarr)
-2. [Dylan Habis](https://github.com/)
+1. [Alex Clinton](https://github.com/ButYarrTho)
+2. [Dylan Habis](https://github.com/Diggins153)
 3. [Filip Vojtěch](https://github.com/FilipVojtech)
 
 # Development
