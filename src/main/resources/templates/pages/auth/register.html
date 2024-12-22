@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<div th:replace="~{ fragments/structure :: head ('Login', true) }"></div>
+<body>
+<div th:replace="~{ fragments/structure :: header }"></div>
+<div class="flex flex-col items-center justify-center flex-1">
+    <div class="md:w-1/2 lg:w-1/3 px-5 md:px-0 w-full place-self-center">
+        <h3 class="text-center text-3xl font-bold mb-3">Register</h3>
+        <form action="/auth/login" method="post" class="flex flex-col gap-2">
+            <div class="flex flex-col">
+                <label for="displayName">Display Name</label>
+                <input
+                    class="border-t-0 border-x-0 border-2 hover:bg-gray-100 focus:bg-gray-100"
+                    type="text"
+                    name="displayName"
+                    id="displayName"
+                    required
+                >
+            </div>
+            <div class="flex flex-col">
+                <label for="email">Email</label>
+                <input
+                    class="border-t-0 border-x-0 border-2 hover:bg-gray-100 focus:bg-gray-100"
+                    type="email"
+                    name="email"
+                    id="email"
+                    required
+                >
+            </div>
+            <div class="flex flex-col">
+                <label for="password">Password</label>
+                <input
+                    class="border-t-0 border-x-0 border-2 hover:bg-gray-100 focus:bg-gray-100"
+                    type="password"
+                    name="password"
+                    id="password"
+                    required
+                >
+            </div>
+            <div class="flex flex-col">
+                <label for="passwordCheck">Repeat Password</label>
+                <input
+                    class="border-t-0 border-x-0 border-2 hover:bg-gray-100 focus:bg-gray-100"
+                    type="password"
+                    name="passwordCheck"
+                    id="passwordCheck"
+                    required
+                >
+            </div>
+            <div class="flex flex-col mt-10">
+                <label for="cardName">Name on Card</label>
+                <input
+                    class="border-t-0 border-x-0 border-2 hover:bg-gray-100 focus:bg-gray-100"
+                    type="text"
+                    name="cardName"
+                    id="cardName"
+                    required
+                >
+            </div>
+            <div class="flex flex-col">
+                <label for="cardNumber">Card Number</label>
+                <input
+                    class="border-t-0 border-x-0 border-2 hover:bg-gray-100 focus:bg-gray-100"
+                    type="text"
+                    name="cardNumber"
+                    id="cardNumber"
+                    pattern="([0-9]{4}[\s\-]?){4}"
+                    required
+                >
+            </div>
+            <div class="flex flex-col md:flex-row gap-1">
+                <div class="flex flex-col flex-1">
+                    <label for="cardMonth">Exp. Month</label>
+                    <select
+                        class="border-t-0 border-x-0 border-2 hover:bg-gray-100"
+                        name="cardMonth"
+                        id="cardMonth"
+                        required
+                    >
+                        <option
+                            th:each="i : ${ #numbers.sequence(1, 12) }"
+                            th:value="${ i }"
+                            th:text="${ #dates.format(#dates.create(2024, i, 1), 'MMMM') }"
+                            th:selected="${ #dates.createNow().month + 1 == i }"
+                        ></option>
+                    </select>
+                </div>
+                <div class="flex flex-col flex-1">
+                    <label for="cardYear">Exp. Year</label>
+                    <select
+                        class="border-t-0 border-x-0 border-2 hover:bg-gray-100"
+                        name="cardYear"
+                        id="cardYear"
+                        onchange="setMonthAvailability()"
+                        required
+                    >
+                        <option
+                            th:each="i : ${ #numbers.sequence(#dates.createNow().year + 7, #dates.createNow().year) }"
+                            th:value="${ i + 1900 }"
+                            th:text="${ i + 1900 }"
+                            th:selected="${ #dates.createNow().year == i }"
+                        ></option>
+                    </select>
+                </div>
+                <div class="flex flex-col flex-1">
+                    <label for="cardSecCode">Security Code</label>
+                    <input
+                        class="no-spinner border-t-0 border-x-0 border-2 hover:bg-gray-100 focus:bg-gray-100"
+                        type="number"
+                        name="cardSecCode"
+                        id="cardSecCode"
+                        required
+                    >
+                </div>
+            </div>
+            <div class="flex items-center">
+                <input class="me-3" type="checkbox" name="gdpr" id="gdpr" required>
+                <label class="prose" for="gdpr">
+                    I have read and agree with the <a href="">Terms of Use</a> and <a href="">Privacy Policy</a>.
+                </label>
+            </div>
+            <div class="flex flex-col">
+                <input type="submit" value="Register" class="bg-primary text-white p-2 cursor-pointer">
+            </div>
+        </form>
+    </div>
+</div>
+<!--<script>-->
+<!--    const currentDate = new Date(Date.now());-->
+<!--    const currentMonthIndex = currentDate.getMonth() + 1;-->
+<!--    const currentYear = currentDate.getFullYear();-->
+<!--    /** @type {HTMLSelectElement} */-->
+<!--    const yearSelect = document.getElementById("cardYear");-->
+<!--    /** @type {HTMLSelectElement} */-->
+<!--    const monthSelect = document.getElementById("cardMonth");-->
+<!--    let monthEls = monthSelect.children;-->
+
+<!--    function setMonthAvailability() {-->
+<!--        const selectedYear = yearSelect.selectedOptions[0];-->
+<!--        for (const monthEl of monthEls) {-->
+<!--            if (selectedYear.value === currentYear.toString()-->
+<!--                && parseInt(monthEl.value) < currentMonthIndex) {-->
+<!--                monthEl.setAttribute("disabled", "");-->
+<!--            } else {-->
+<!--                monthEl.removeAttribute("disabled");-->
+<!--            }-->
+<!--        }-->
+
+
+<!--        const selectedMonth = monthSelect.selectedOptions[0];-->
+<!--        if (selectedYear.value === currentYear.toString()-->
+<!--            && parseInt(selectedMonth.value) < currentMonthIndex) {-->
+<!--            let smth = [ ...monthEls ]-->
+<!--            smth = smth.filter(value => value.value >= currentMonthIndex);-->
+<!--            selectedMonth.removeAttribute("selected");-->
+<!--            smth[0].setAttribute("selected", "");-->
+<!--        }-->
+<!--    }-->
+
+<!--    window.addEventListener("load", setMonthAvailability);-->
+<!--</script>-->
+</body>
+</html>
