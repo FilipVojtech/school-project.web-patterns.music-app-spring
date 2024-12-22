@@ -5,3 +5,25 @@
 .nav-button {
     @apply bg-gray-700 text-white p-2 rounded
 }
+
+body {
+    @apply min-h-dvh;
+}
+
+#header {
+    @apply sticky top-0 z-30;
+}
+
+/*** Forms ***/
+/*region Remove arrows from number input*/
+
+input[type=number].no-spinner::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number].no-spinner {
+    -moz-appearance: textfield;
+}
+
+/*endregion*/
