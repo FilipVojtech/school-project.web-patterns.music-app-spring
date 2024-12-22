@@ -1,6 +1,6 @@
-CREATE DATABASE IF NOT EXISTS music_app;
+CREATE DATABASE IF NOT EXISTS test_music_app;
 
-USE music_app;
+USE test_music_app;
 
 CREATE TABLE users (
                           id INT AUTO_INCREMENT PRIMARY KEY,

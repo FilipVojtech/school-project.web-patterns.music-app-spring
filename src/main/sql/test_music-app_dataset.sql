@@ -1,4 +1,4 @@
-USE music_app;
+USE test_music_app;
 
 INSERT INTO artist (name) VALUES
                               ('The Beatles'),
