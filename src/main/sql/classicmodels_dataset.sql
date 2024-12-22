@@ -21,7 +21,7 @@ INSERT INTO song (artist_id, title, rating) VALUES
                                                 (4, 'Bohemian Rhapsody', 5),
                                                 (5, 'Gimme Shelter', 5);
 
-INSERT INTO app_user (email, password, display_name) VALUES
+INSERT INTO users (email, password, display_name) VALUES
                                                          # All passwords are "Password"
                                                          ('user1@example.com', '$2a$14$Sci/QKCO4xEAqh2O3/PSk.XGWdEF.Jxy/AB0cDCkGWu19Gz1d3gPq', 'User One'),
                                                          ('user2@example.com', '$2a$14$IUvGQl20ZUAZ78zB./nYVODp9yrq9UtMkCvkx7kh0kBCpU1bg9vo2', 'User Two'),
