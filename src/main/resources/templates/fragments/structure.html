@@ -13,11 +13,13 @@
 </head>
 
 <body>
-<header th:fragment="header">
-    <nav class="bg-gray-800 flex flex-row gap-2 p-2">
-        <div class="nav-button"><a th:href="@{/}">Home</a></div>
-        <div class="nav-button"><a th:href="@{/playlists}">Playlists</a></div>
-        <div class="nav-button"><a th:href="@{/logout}">Logout</a></div>
+<header id="header" th:fragment="header">
+    <nav class="bg-gray-800 flex gap-2 p-2">
+        <a class="nav-button" th:href="@{/}">Home</a>
+        <a class="nav-button" th:href="@{/playlists}">Playlists</a>
+        <a class="nav-button" th:href="@{/login}">Login</a>
+        <a class="nav-button" th:href="@{/register}">Register</a>
+        <a class="nav-button" th:href="@{/auth/logout}">Logout</a>
     </nav>
 </header>
 </body>
