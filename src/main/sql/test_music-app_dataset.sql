@@ -1,3 +1,5 @@
+USE music_app;
+
 INSERT INTO artist (name) VALUES
                               ('The Beatles'),
                               ('Led Zeppelin'),
@@ -44,7 +46,7 @@ INSERT INTO album_songs (album_id, song_id) VALUES
                                                 (5, 7);
 
 INSERT INTO playlist (name, owner_id, visibility, rating) VALUES
-                                                        ('Playlist 1', 1, 1, 5),
+                                                        ('Playlist 1',1, 1, 5),
                                                         ('Playlist 2',2, 0, 4),
                                                         ('Playlist 3',3, 1, 3);
 

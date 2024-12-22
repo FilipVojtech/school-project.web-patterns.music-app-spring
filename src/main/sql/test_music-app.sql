@@ -1,8 +1,12 @@
+CREATE DATABASE IF NOT EXISTS music_app;
+
+USE music_app;
+
 CREATE TABLE users (
                           id INT AUTO_INCREMENT PRIMARY KEY,
                           email VARCHAR(255) NOT NULL,
-                          password VARCHAR(60) NOT NULL,
-                          display_name VARCHAR(60)
+                          password VARCHAR(255) NOT NULL,
+                          display_name VARCHAR(255)
 );
 
 CREATE TABLE artist (
@@ -68,4 +72,3 @@ CREATE TABLE user_likes (
                             FOREIGN KEY (user_id) REFERENCES users(id),
                             FOREIGN KEY (song_id) REFERENCES song(id)
 );
-
