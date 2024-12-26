@@ -29,7 +29,7 @@ public class UserDaoImpl extends MySQLDao implements UserDao {
 
     @Override
     public User getUser(int id) throws RecordNotFound {
-        final var sql = "SELECT * FROM app_user WHERE id = ?";
+        final var sql = "SELECT * FROM users WHERE id = ?";
 
         try (Connection con = super.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -56,7 +56,7 @@ public class UserDaoImpl extends MySQLDao implements UserDao {
 
     @Override
     public User getUserByEmail(@NonNull String email) throws RecordNotFound {
-        final var sql = "SELECT * FROM app_user WHERE email = ?";
+        final var sql = "SELECT * FROM users WHERE email = ?";
 
         try (Connection con = super.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -83,7 +83,7 @@ public class UserDaoImpl extends MySQLDao implements UserDao {
 
     @Override
     public boolean createUser(@NonNull User user) throws EmailAddressAlreadyUsed {
-        final var sql = "INSERT INTO app_user (email, password, display_name) VALUE (?, ?, ?)";
+        final var sql = "INSERT INTO users (email, password, display_name) VALUE (?, ?, ?)";
 
         try {
             if (getUserByEmail(user.getEmail()) != null)
@@ -111,7 +111,7 @@ public class UserDaoImpl extends MySQLDao implements UserDao {
 //        if (newUserData.getId() == 0) {
 //            System.out.println("Cannot update user. ID is not set.");
 //        }
-//        final var sql = "UPDATE app_user SET display_name = ?, email = ? WHERE id = ?;";
+//        final var sql = "UPDATE users SET display_name = ?, email = ? WHERE id = ?;";
 //
 //        // todo: Check that new email address is unique
 //        //     Allows the user to change their email address to someone else's
