@@ -8,7 +8,7 @@ public class FormValidation {
      * Check if value is an email
      *
      * @param value The value to be checked
-     * @return Boolean
+     * @return True if validation succeeds. False otherwise.
      */
     public static boolean isEmail(String value) {
         Pattern pattern = Pattern.compile("[.\\S]+@[.\\S]+\\.[\\w]{2,3}");
@@ -22,7 +22,7 @@ public class FormValidation {
      *
      * @param value         The value to be checked.
      * @param numberOfChars Number of special characters required.
-     * @return Boolean
+     * @return True if validation succeeds. False otherwise.
      */
     public static boolean hasSpecialChars(String value, int numberOfChars) {
         return Pattern
@@ -39,7 +39,7 @@ public class FormValidation {
      *
      * @param value          The value to be checked.
      * @param numberOfDigits Number of digits required.
-     * @return Boolean
+     * @return True if validation succeeds. False otherwise.
      */
     public static boolean hasDigits(String value, int numberOfDigits) {
         return Pattern
@@ -55,7 +55,7 @@ public class FormValidation {
      *
      * @param value             The value to be checked.
      * @param numberOfUppercase Number of uppercase letters required.
-     * @return Boolean
+     * @return True if validation succeeds. False otherwise.
      */
     public static boolean hasUppercase(String value, int numberOfUppercase) {
         return Pattern
