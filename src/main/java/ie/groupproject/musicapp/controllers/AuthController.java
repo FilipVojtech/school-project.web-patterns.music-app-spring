@@ -28,6 +28,7 @@ import java.util.LinkedHashMap;
 public class AuthController {
     @GetMapping("/login")
     public String loginPage(Model model, HttpSession session) {
+        if (session.getAttribute("user") != null) return "redirect:/";
         if (!model.containsAttribute("form")) model.addAttribute("form", new Form());
         return "pages/auth/login";
     }
@@ -68,7 +69,9 @@ public class AuthController {
     }
 
     @GetMapping("/register")
-    public String registerPage(Model model) {
+    public String registerPage(Model model, HttpSession session) {
+        if (session.getAttribute("user") != null) return "redirect:/";
+
         var map = new LinkedHashMap<Integer, String>();
         for (int i = 0; i < 12; i++) {
             map.put(i + 1, LocalDate.of(2024, i + 1, 1).getMonth().toString());
