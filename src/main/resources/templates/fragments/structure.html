@@ -16,10 +16,17 @@
 <header id="header" th:fragment="header">
     <nav class="bg-gray-800 flex gap-2 p-2">
         <a class="nav-button" th:href="@{/}">Home</a>
-        <a class="nav-button" th:href="@{/playlists}">Playlists</a>
-        <a class="nav-button" th:href="@{/login}">Login</a>
-        <a class="nav-button" th:href="@{/register}">Register</a>
-        <a class="nav-button" th:href="@{/auth/logout}">Logout</a>
+        <div th:if="${session.user != null}" th:remove="tag">
+            <a class="nav-button" th:href="@{/playlists}">Playlists</a>
+        </div>
+        <div th:if="${session.user == null}" th:remove="tag">
+            <a class="nav-button" th:href="@{/login}">Login</a>
+            <a class="nav-button" th:href="@{/register}">Register</a>
+        </div>
+        <div th:if="${session.user != null}" th:remove="tag">
+            <a class="nav-button" th:href="@{/auth/logout}">Logout</a>
+        </div>
+        <div class="nav-button" th:if="${session.user != null}" th:text="${session.user.displayName}"></div>
     </nav>
 </header>
 </body>
