@@ -27,13 +27,44 @@ import java.util.LinkedHashMap;
 @Slf4j
 public class AuthController {
     @GetMapping("/login")
-    public String loginPage() {
+    public String loginPage(Model model, HttpSession session) {
+        if (!model.containsAttribute("form")) model.addAttribute("form", new Form());
         return "pages/auth/login";
     }
 
     @PostMapping("/auth/login")
-    public RedirectView loginFormHandler() {
-        return new RedirectView("/");
+    public String loginFormHandler(
+            HttpSession session,
+            @RequestParam(name = "email") String email,
+            @RequestParam(name = "password") String password,
+            RedirectAttributes redirectAttributes
+    ) {
+        UserDao userDao = new UserDaoImpl("database.properties");
+        Form form = new Form();
+        var emailField = form.addField("email", email);
+        var passwordField = form.addField("password", password);
+
+        redirectAttributes.addFlashAttribute("form", form);
+
+        //region Email Validation
+        if (!FormValidation.isEmail(email)) emailField.addError("Please enter an email address");
+        //endregion
+
+        User user;
+        try {
+            user = userDao.getUserByEmail(email);
+        } catch (RecordNotFound e) {
+            user = null;
+        }
+
+        if (user != null && BCrypt.checkpw(password, user.getPassword())) {
+            session.setAttribute("user", user);
+            return "redirect:/";
+        } else {
+            form.addError("Please check that the email or password entered are correct.");
+            return "redirect:/login";
+        }
+
     }
 
     @GetMapping("/register")
