@@ -15,16 +15,16 @@
 <body>
 <header id="header" th:fragment="header">
     <nav class="bg-gray-800 flex gap-2 p-2">
-        <a class="nav-button" th:href="@{/}">Home</a>
+        <a class="nav-button" th:href="@{/}" th:text="#{navbar.home}"></a>
         <div th:if="${session.user != null}" th:remove="tag">
-            <a class="nav-button" th:href="@{/playlists}">Playlists</a>
+            <a class="nav-button" th:href="@{/playlists}" th:text="#{navbar.playlists}"></a>
         </div>
         <div th:if="${session.user == null}" th:remove="tag">
-            <a class="nav-button" th:href="@{/login}">Login</a>
-            <a class="nav-button" th:href="@{/register}">Register</a>
+            <a class="nav-button" th:href="@{/login}" th:text="#{navbar.login}"></a>
+            <a class="nav-button" th:href="@{/register}" th:text="#{navbar.register}"></a>
         </div>
         <div th:if="${session.user != null}" th:remove="tag">
-            <a class="nav-button" th:href="@{/auth/logout}">Logout</a>
+            <a class="nav-button" th:href="@{/auth/logout}" th:text="#{navbar.logout}"></a>
         </div>
         <div class="nav-button" th:if="${session.user != null}" th:text="${session.user.displayName}"></div>
         <div th:fragment="languageSelect" class="flex ms-auto">
