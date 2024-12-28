@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
-<div th:replace="~{ fragments/structure :: head ('Register', true) }"></div>
+<html th:lang="${#locale.language}">
+<div th:replace="~{ fragments/structure :: head (#{page.register.registerHeading}, true) }"></div>
 <body>
 <div th:replace="~{ fragments/structure :: header }"></div>
 <div class="flex flex-col items-center justify-center flex-1">
     <div class="md:w-1/2 lg:w-1/3 px-5 md:px-0 w-full place-self-center">
-        <h3 class="text-center text-3xl font-bold mb-3">Register</h3>
+        <h3 class="text-center text-3xl font-bold mb-3" th:text="#{page.register.registerHeading}"></h3>
         <form action="/auth/register" method="post" class="flex flex-col gap-2">
             <div class="flex flex-col">
-                <label for="displayName">Display Name</label>
+                <label for="displayName" th:text="#{form.displayName}"></label>
                 <input
                     th:class="|border-t-0 border-x-0 border-2 hover:bg-gray-100 focus:bg-gray-100 ${form.isValid('displayName') ? '' : 'border-red-500'}|"
                     type="text"
@@ -20,7 +20,7 @@
                 <div th:replace="~{ fragments/form :: errorFor('displayName') }"></div>
             </div>
             <div class="flex flex-col">
-                <label for="email">Email</label>
+                <label for="email" th:text="#{form.email}"></label>
                 <input
                     th:class="|border-t-0 border-x-0 border-2 hover:bg-gray-100 focus:bg-gray-100 ${form.isValid('email') ? '' : 'border-red-500'}|"
                     type="email"
@@ -32,7 +32,7 @@
                 <div th:replace="~{ fragments/form :: errorFor('email') }"></div>
             </div>
             <div class="flex flex-col">
-                <label for="password">Password</label>
+                <label for="password" th:text="#{form.password}"></label>
                 <input
                     th:class="|border-t-0 border-x-0 border-2 hover:bg-gray-100 focus:bg-gray-100 ${form.isValid('password') ? '' : 'border-red-500'}|"
                     type="password"
@@ -43,7 +43,7 @@
                 <div th:replace="~{ fragments/form :: errorFor('password') }"></div>
             </div>
             <div class="flex flex-col">
-                <label for="passwordCheck">Repeat Password</label>
+                <label for="passwordCheck" th:text="#{form.passwordRepeat}"></label>
                 <input
                     th:class="|border-t-0 border-x-0 border-2 hover:bg-gray-100 focus:bg-gray-100 ${form.isValid('passwordCheck') ? '' : 'border-red-500'}|"
                     type="password"
@@ -54,7 +54,7 @@
                 <div th:replace="~{ fragments/form :: errorFor('passwordCheck') }"></div>
             </div>
             <div class="flex flex-col mt-10">
-                <label for="cardName">Name on Card</label>
+                <label for="cardName" th:utext="#{form.nameOnCard}"></label>
                 <input
                     th:class="|border-t-0 border-x-0 border-2 hover:bg-gray-100 focus:bg-gray-100 ${form.isValid('cardName') ? '' : 'border-red-500'}|"
                     type="text"
@@ -66,7 +66,7 @@
                 <div th:replace="~{ fragments/form :: errorFor('cardName') }"></div>
             </div>
             <div class="flex flex-col">
-                <label for="cardNumber">Card Number</label>
+                <label for="cardNumber" th:text="#{form.cardNumber}"></label>
                 <input
                     th:class="|border-t-0 border-x-0 border-2 hover:bg-gray-100 focus:bg-gray-100 ${form.isValid('cardNumber') ? '' : 'border-red-500'}|"
                     type="text"
@@ -80,7 +80,7 @@
             </div>
             <div class="flex flex-col md:flex-row gap-1">
                 <div class="flex flex-col flex-1">
-                    <label for="cardMonth">Exp. Month</label>
+                    <label for="cardMonth" th:text="#{form.expirationMonth}"></label>
                     <select
                         th:class="|border-t-0 border-x-0 border-2 hover:bg-gray-100 ${form.isValid('cardMonth') ? '' : 'border-red-500'}|"
                         name="cardMonth"
@@ -97,7 +97,7 @@
                     <div th:replace="~{ fragments/form :: errorFor('cardMonth') }"></div>
                 </div>
                 <div class="flex flex-col flex-1">
-                    <label for="cardYear">Exp. Year</label>
+                    <label for="cardYear" th:text="#{form.expirationYear}"></label>
                     <select
                         th:class="|border-t-0 border-x-0 border-2 hover:bg-gray-100 ${form.isValid('cardMonth') ? '' : 'border-red-500'}|"
                         name="cardYear"
@@ -116,7 +116,7 @@
                     <div th:replace="~{ fragments/form :: errorFor('cardYear') }"></div>
                 </div>
                 <div class="flex flex-col flex-1">
-                    <label for="cardSecCode">Security Code</label>
+                    <label for="cardSecCode" th:text="#{form.securityCode}"></label>
                     <input
                         th:class="|no-spinner border-t-0 border-x-0 border-2 hover:bg-gray-100 focus:bg-gray-100 ${form.isValid('cardSecCode') ? '' : 'border-red-500'}|"
                         type="number"
@@ -134,14 +134,12 @@
                     name="gdpr"
                     id="gdpr"
                 >
-                <label class="prose" for="gdpr">
-                    I have read and agree with the <a href="">Terms of Use</a> and <a href="">Privacy Policy</a>.
-                </label>
+                <label class="prose" for="gdpr" th:utext="#{form.gdpr}"></label>
                 <div th:replace="~{ fragments/form :: errorFor('gdpr') }"></div>
             </div>
             <div th:replace="~{ fragments/form :: formErrors }"></div>
             <div class="flex flex-col">
-                <input type="submit" value="Register" class="bg-primary text-white p-2 cursor-pointer">
+                <input type="submit" th:value="#{form.register}" class="bg-primary text-white p-2 cursor-pointer">
             </div>
         </form>
     </div>

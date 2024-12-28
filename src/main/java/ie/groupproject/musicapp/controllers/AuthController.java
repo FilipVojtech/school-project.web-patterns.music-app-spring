@@ -11,6 +11,8 @@ import ie.groupproject.musicapp.util.FormValidation;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,10 +24,14 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 
 @Controller
 @Slf4j
 public class AuthController {
+    @Autowired
+    MessageSource messageSource;
+
     @GetMapping("/login")
     public String loginPage(Model model, HttpSession session) {
         if (session.getAttribute("user") != null) return "redirect:/";
@@ -38,7 +44,8 @@ public class AuthController {
             HttpSession session,
             @RequestParam(name = "email") String email,
             @RequestParam(name = "password") String password,
-            RedirectAttributes redirectAttributes
+            RedirectAttributes redirectAttributes,
+            Locale locale
     ) {
         UserDao userDao = new UserDaoImpl("database.properties");
         Form form = new Form();
@@ -48,7 +55,7 @@ public class AuthController {
         redirectAttributes.addFlashAttribute("form", form);
 
         //region Email Validation
-        if (!FormValidation.isEmail(email)) emailField.addError("Please enter an email address");
+        if (!FormValidation.isEmail(email)) emailField.addError(messageSource.getMessage("form.errors.emailAddressIncorrectFormat", null, locale));
         //endregion
 
         User user;
@@ -62,7 +69,7 @@ public class AuthController {
             session.setAttribute("user", user);
             return "redirect:/";
         } else {
-            form.addError("Please check that the email or password entered are correct.");
+            form.addError(messageSource.getMessage("form.errors.incorrectEmailOrPassword", null, locale));
             return "redirect:/login";
         }
 
@@ -94,7 +101,8 @@ public class AuthController {
             @RequestParam(name = "cardYear") int cardYear,
             @RequestParam(name = "cardSecCode") String cardSecCode,
             @RequestParam(name = "gdpr", required = false, defaultValue = "false") boolean gdpr,
-            RedirectAttributes redirectAttributes
+            RedirectAttributes redirectAttributes,
+            Locale locale
     ) {
         UserDao userDao = new UserDaoImpl("database.properties");
         Form form = new Form();
@@ -113,39 +121,39 @@ public class AuthController {
 
         //region GDPR
         if (!gdpr) {
-            form.addError("You need to accept the terms to continue.");
+            form.addError(messageSource.getMessage("form.errors.gdprNotAccepted", null, locale));
         }
         //endregion
 
         //region Display Name Validation
         if (displayName.length() > 60) {
-            displayNameField.addError("Display name cannot be longer than 60 characters");
+            displayNameField.addError(messageSource.getMessage("form.errors.displayNameTooLong", null, locale));
         }
         //endregion
 
         //region Email Validation
-        if (!FormValidation.isEmail(email)) emailField.addError("Please enter an email address");
+        if (!FormValidation.isEmail(email))
+            emailField.addError(messageSource.getMessage("form.errors.emailAddressIncorrectFormat", null, locale));
         try {
             userDao.getUserByEmail(email);
-            emailField.addError("User with this email address already exists, please choose a different email.");
+            emailField.addError(messageSource.getMessage("form.errors.userAlreadyExists", null, locale));
         } catch (RecordNotFound ignore) {
         }
         //endregion
 
         //region Password Validation
         if (!password.equals(passwordCheck)) {
-            passwordCheckField.addError("Passwords do not match.");
+            passwordCheckField.addError(messageSource.getMessage("form.errors.passwordMismatch", null, locale));
         }
 
         if (password.length() < 10) {
-            passwordField.addError("Password must be at least 10 characters long.");
-//            form.addError("password", "Password must be at least 10 characters long.");
+            passwordField.addError(messageSource.getMessage("form.errors.passwordIsShort", null, locale));
         }
         if (!FormValidation.hasUppercase(password, 1))
-            passwordField.addError("Password must have an uppercase letter.");
-        if (!FormValidation.hasDigits(password, 1)) passwordField.addError("Password must have a digit.");
+            passwordField.addError(messageSource.getMessage("form.errors.passwordNoUppercase", null, locale));
+        if (!FormValidation.hasDigits(password, 1)) passwordField.addError(messageSource.getMessage("form.errors.passwordNoDigit", null, locale));
         if (!FormValidation.hasSpecialChars(password, 1))
-            passwordField.addError("Password must have a special character.");
+            passwordField.addError(messageSource.getMessage("form.errors.passwordNoSpecialCharacter", null, locale));
         //endregion
 
         //region Card Validation
@@ -165,15 +173,15 @@ public class AuthController {
 
                 card = new CreditCard(cardNum, expiration, cardSecCode, cardName);
 
-                if (card.isExpired()) form.addError("Card is already expired, please add a different one.");
+                if (card.isExpired()) form.addError(messageSource.getMessage("form.errors.cardAlreadyExpired", null, locale));
             } catch (IllegalArgumentException e) {
-                form.addError("Please check that the card details are correct.");
+                form.addError(messageSource.getMessage("form.errors.cardRecheck", null, locale));
             } catch (InvalidCardNumberException e) {
-                cardNumberField.addError("Invalid card number.");
+                cardNumberField.addError(messageSource.getMessage("form.errors.cardInvalidNumber", null, locale));
             }
             // Card is valid
         } catch (NumberFormatException e) {
-            cardNumberField.addError("Please check that card number is in correct format. Accepted characters are digits, spaces, and/or dashes.");
+            cardNumberField.addError(messageSource.getMessage("form.errors.cardFormat", null, locale));
         }
         //endregion
 
