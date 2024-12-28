@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html th:lang="${#locale.language}">
 <!-- Head -->
 <div th:replace="~{ fragments/structure :: head (pageTitle = 'Evil Spotify', formStyle = false) }"></div>
 <body>
 <!-- Header -->
 <header th:replace="~{ fragments/structure :: header }"></header>
 <div>
-    <h1>Welcome to Music App</h1>
+    <h1 th:text="#{page.index.welcomeMessage}">Welcome to Music App</h1>
 </div>
 </body>
 </html>
