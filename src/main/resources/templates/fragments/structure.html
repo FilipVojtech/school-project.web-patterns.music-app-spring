@@ -27,6 +27,21 @@
             <a class="nav-button" th:href="@{/auth/logout}">Logout</a>
         </div>
         <div class="nav-button" th:if="${session.user != null}" th:text="${session.user.displayName}"></div>
+        <div th:fragment="languageSelect" class="flex ms-auto">
+            <!--/*<div class="text-white" th:text="${#locale.toLanguageTag()}"></div>*/-->
+            <form th:action="@{/changeLanguage}">
+                <select
+                    name="lang"
+                    id="language"
+                    onchange="this.form.submit()"
+                    class="nav-button pe-10 border-none"
+                    th:with="langTag = ${#locale.toLanguageTag()}"
+                >
+                    <option th:selected="${langTag == 'en-UK'}" value="en-UK">English</option>
+                    <option th:selected="${langTag == 'pt-PT'}" value="pt-PT">Português</option>
+                </select>
+            </form>
+        </div>
     </nav>
 </header>
 </body>
