@@ -35,6 +35,12 @@ public class Form {
         formErrors.add(message);
     }
 
+    /**
+     * Add an error to a field
+     *
+     * @param fieldName Name of the field
+     * @param message   Error message
+     */
     public void addError(String fieldName, String message) {
         formFields.get(fieldName).addError(message);
     }
@@ -77,12 +83,24 @@ public class Form {
         return field.getErrorMessages();
     }
 
+    /**
+     * Check if a field has a value
+     *
+     * @param fieldName Name of the field
+     * @return True if the field has a value. False otherwise.
+     */
     public boolean hasValue(String fieldName) {
         var field = formFields.get(fieldName);
         if (field == null) return false;
         return field.value != null;
     }
 
+    /**
+     * Get a value from a field.
+     *
+     * @param fieldName Name of the field.
+     * @return Value of the field. Empty string if no value is present.
+     */
     public String getValue(String fieldName) {
         var field = formFields.get(fieldName);
         if (field == null) return "";

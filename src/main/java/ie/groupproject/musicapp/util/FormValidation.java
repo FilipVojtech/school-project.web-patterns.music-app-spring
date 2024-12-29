@@ -3,6 +3,9 @@ package ie.groupproject.musicapp.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Class containing various form validation methods.
+ */
 public class FormValidation {
     /**
      * Check if value is an email
