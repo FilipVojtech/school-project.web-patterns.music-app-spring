@@ -1,6 +1,7 @@
 {
   "name": "frontend",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "tailwindcss -i ./main.css -o ../resources/static/styles/main.css --minify",
     "watch": "tailwindcss -i ./main.css -o ../resources/static/styles/main.css --watch"
