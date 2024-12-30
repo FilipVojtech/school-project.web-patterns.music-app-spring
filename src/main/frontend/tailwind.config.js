@@ -2,7 +2,7 @@ import formsPlugin from "@tailwindcss/forms";
 import typographyPlugin from '@tailwindcss/typography';
 
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
     content: [ "../resources/templates/**/*.{html,js}" ],
     theme: {
         extend: {
