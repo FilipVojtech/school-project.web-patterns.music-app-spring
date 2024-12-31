@@ -1,10 +1,87 @@
 <!DOCTYPE html>
 <html th:lang="${#locale.language}">
-<div th:replace="~{ fragments/structure :: head (pageTitle = 'Playlists', formStyle = false) }"></div>
+<!-- Head -->
+<div th:replace="~{ fragments/structure :: head (pageTitle = 'Evil Spotify', formStyle = false) }"></div>
 <body>
+<!-- Header -->
 <header th:replace="~{ fragments/structure :: header }"></header>
 <main>
-    <h1>Playlists Page</h1>
+    <section class="container">
+
+        <h1>Playlists</h1>
+
+        <!-- Create Playlist Form -->
+        <div class="mb-6 p-5 border-2 rounded-lg shadow">
+            <h2>Create a New Playlist</h2>
+            <form action="/playlists/create" method="post">
+                <div class="form-group">
+                    <label for="playlistName">Playlist Name</label>
+                    <input type="text" id="playlistName" name="name" placeholder="Enter playlist name" required>
+                </div>
+                <div class="form-group">
+                    <label for="visibility">Visibility</label>
+                    <select id="visibility" name="visibility">
+                        <option value="true">Public</option>
+                        <option value="false">Private</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">Create Playlist</button>
+            </form>
+        </div>
+
+        <!-- Search and Manage Playlists -->
+        <div class="mb-6 p-5 border-2 rounded-lg shadow">
+            <h2>Your Playlists</h2>
+            <form action="/playlists/search" method="get" class="search-form">
+                <input type="text" name="query" placeholder="Search playlists by name" required>
+                <button type="submit" class="btn">Search</button>
+            </form>
+            <ul class="playlist-list">
+                <li th:each="playlist : ${playlists}">
+                    <div class="playlist-item">
+                        <h3 th:text="${playlist.name}">Playlist Name</h3>
+                        <p>
+                            <strong>Visibility:</strong> <span th:text="${playlist.visibility ? 'Public' : 'Private'}"></span>
+                        </p>
+                        <form action="/playlists/{playlist.playlistId}/rename" method="post" class="inline-form">
+                            <input type="text" name="newName" placeholder="Rename playlist">
+                            <button type="submit" class="btn btn-small">Rename</button>
+                        </form>
+                        <a th:href="@{'/playlists/' + ${playlist.playlistId}}" class="btn btn-small">View Details</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Add/Remove Songs -->
+        <div class="mb-6 p-5 border-2 rounded-lg shadow">
+            <h2>Manage Songs in Playlist</h2>
+            <form action="/playlists/{playlistId}/songs/add" method="post" class="inline-form">
+                <label for="songName">Add Song</label>
+                <input type="text" id="songName" name="songName" placeholder="Enter song name" required>
+                <button type="submit" class="btn">Add Song</button>
+            </form>
+            <form action="/playlists/{playlistId}/songs/remove" method="post" class="inline-form">
+                <label for="songNameRemove">Remove Song</label>
+                <input type="text" id="songNameRemove" name="songName" placeholder="Enter song name" required>
+                <button type="submit" class="btn btn-danger">Remove Song</button>
+            </form>
+        </div>
+
+        <!-- Public Playlists -->
+        <div class="mb-6 p-5 border-2 rounded-lg shadow">
+            <h2>Public Playlists</h2>
+            <ul class="playlist-list">
+                <li th:each="playlist : ${publicPlaylists}">
+                    <div class="playlist-item">
+                        <h3 th:text="${playlist.name}">Playlist Name</h3>
+                        <p>Owner: <span th:text="${playlist.userId}">User ID</span></p>
+                        <a th:href="@{'/playlists/' + ${playlist.playlistId}}" class="btn btn-small">View Details</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </section>
 </main>
 </body>
 </html>

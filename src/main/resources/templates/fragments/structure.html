@@ -18,6 +18,7 @@
         <a class="nav-button" th:href="@{/}" th:text="#{navbar.home}"></a>
         <div th:if="${session.user != null}" th:remove="tag">
             <a class="nav-button" th:href="@{/playlists}" th:text="#{navbar.playlists}"></a>
+            <a class="nav-button" th:href="@{/rating}" th:text="#{navbar.rating}"></a>
         </div>
         <div th:if="${session.user == null}" th:remove="tag">
             <a class="nav-button" th:href="@{/login}" th:text="#{navbar.login}"></a>
