@@ -192,23 +192,6 @@ public class PlaylistDaoImpl extends MySQLDao implements PlaylistDao {
         return songs;
     }
 
-    @Override
-    public int getUserIdByEmail(String email) {
-        String sql = "SELECT id FROM users WHERE email = ?";
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, email);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("id");
-                }
-            }
-        } catch (SQLException e) {
-            System.out.println("Error retrieving user ID by email: " + e.getMessage());
-        }
-        throw new RuntimeException("User not found with email: " + email);
-    }
-
 
     private Playlist mapPlaylist(ResultSet rs) throws SQLException {
         return Playlist.builder()
