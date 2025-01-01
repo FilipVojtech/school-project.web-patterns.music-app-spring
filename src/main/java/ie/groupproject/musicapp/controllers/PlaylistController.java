@@ -1,26 +1,34 @@
 package ie.groupproject.musicapp.controllers;
 
 import ie.groupproject.musicapp.business.Playlist;
+import ie.groupproject.musicapp.business.Song;
 import ie.groupproject.musicapp.business.User;
 import ie.groupproject.musicapp.persistence.PlaylistDao;
 import ie.groupproject.musicapp.persistence.PlaylistDaoImpl;
+import ie.groupproject.musicapp.persistence.SongDao;
+import ie.groupproject.musicapp.persistence.SongDaoImpl;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/playlists") // Base path for playlist-specific actions
 public class PlaylistController {
 
     private final PlaylistDao playlistDao;
+    private final SongDao songDao;
 
-    // Initialize PlaylistDao with database properties file
+    // Initialize PlaylistDao and SongDao with database properties file
     public PlaylistController() {
         this.playlistDao = new PlaylistDaoImpl("database.properties");
+        this.songDao = new SongDaoImpl("database.properties");
     }
 
     // Render the playlists page and display user-specific playlists
@@ -116,5 +124,22 @@ public class PlaylistController {
         model.addAttribute("otherPublicPlaylists", otherPublicPlaylists);
 
         return "pages/publicPlaylists"; // Render a page for public playlists
+    }
+
+    // Fetch songs for a specific playlist
+    @GetMapping("/{playlistId}/songs")
+    @ResponseBody
+    public List<Map<String, String>> getPlaylistSongs(@PathVariable int playlistId) throws SQLException {
+        List<Song> songs = songDao.getSongsByPlaylist(playlistId); // Fetch songs for the playlist
+        List<Map<String, String>> songDetails = new ArrayList<>();
+
+        for (Song song : songs) {
+            Map<String, String> songDetail = new HashMap<>();
+            songDetail.put("title", song.getTitle());
+            songDetail.put("artist", songDao.getArtistName(song.getArtist_id())); // Get artist name
+            songDetails.add(songDetail);
+        }
+
+        return songDetails; // Return song details as JSON
     }
 }

@@ -96,4 +96,50 @@ public class SongDaoImpl extends MySQLDao implements SongDao {
         return songs;
     }
 
+    public String getArtistName(int artistId) {
+        String artistName = "";
+        String sql = "SELECT name FROM artist WHERE id = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, artistId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    artistName = rs.getString("name");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error retrieving artist name: " + e.getMessage());
+        }
+
+        return artistName;
+    }
+
+    @Override
+    public List<Song> getSongsByPlaylist(int playlistId) {
+        List<Song> songs = new ArrayList<>();
+        String sql = "SELECT s.id, s.title, s.artist_id FROM song s " +
+                "JOIN playlist_songs ps ON s.id = ps.song_id " +
+                "WHERE ps.playlist_id = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, playlistId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Song song = new Song();
+                    song.setId(rs.getInt("id"));
+                    song.setTitle(rs.getString("title"));
+                    song.setArtist_id(rs.getInt("artist_id"));
+                    songs.add(song);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error retrieving songs by playlist: " + e.getMessage());
+        }
+
+        return songs;
+    }
+
 }
