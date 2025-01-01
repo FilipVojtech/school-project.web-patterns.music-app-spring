@@ -11,11 +11,6 @@ public class IndexController {
         return "pages/index";
     }
 
-    @GetMapping("/playlists")
-    public String playlistsPage() {
-        return "pages/playlists";
-    }
-
     @GetMapping("/rating")
     public String ratingPage() {
         return "pages/rating";
