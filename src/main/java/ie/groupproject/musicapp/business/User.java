@@ -21,4 +21,11 @@ public class User {
         this.password = password;
         this.displayName = displayName;
     }
+
+    /**
+     * Copy constructor
+     */
+    public User(User original) {
+        this(original.getId(), original.getEmail(), original.getPassword(), original.getDisplayName());
+    }
 }
