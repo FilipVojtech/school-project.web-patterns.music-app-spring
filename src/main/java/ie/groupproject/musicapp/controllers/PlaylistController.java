@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -128,14 +129,21 @@ public class PlaylistController {
 
     // Search for songs
     @GetMapping("/searchSongs")
-    @ResponseBody
-    public List<Song> searchSongs(@RequestParam String keyword) {
-        try {
-            return songDao.searchSongs(keyword);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
+    public String searchSongs(@RequestParam String keyword, @RequestParam int playlistId, Model model, HttpSession session) throws SQLException {
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            return "redirect:/login";
         }
+
+        // Fetch songs matching the keyword
+        List<Song> searchResults = songDao.searchSongs(keyword);
+
+        // Add data to the model
+        model.addAttribute("searchResults", searchResults);
+        model.addAttribute("selectedPlaylistId", playlistId); // Pass the selected playlist ID back
+        model.addAttribute("keyword", keyword);
+
+        return "pages/playlists"; // Ensure this matches your template
     }
 
     // Add a song to a playlist
@@ -153,23 +161,28 @@ public class PlaylistController {
 
     // Remove a song from a playlist
     @PostMapping("/{playlistId}/removeSong")
-    @ResponseBody
-    public String removeSongFromPlaylist(@PathVariable int playlistId, @RequestBody Map<String, Integer> payload, HttpSession session) {
+    public String removeSongFromPlaylist(
+            @PathVariable int playlistId,
+            @RequestParam int songId,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
             return "redirect:/login";
         }
 
-        int songId = payload.get("songId");
+        boolean success = playlistDao.removeSongFromPlaylist(playlistId, songId);
 
-        try {
-            playlistDao.removeSongFromPlaylist(playlistId, songId);
-            return "success";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "failure";
+        if (success) {
+            redirectAttributes.addFlashAttribute("message", "Song removed successfully!");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Failed to remove the song.");
         }
+
+        return "redirect:/playlists"; // Redirect back to the playlists page
     }
+
 
     @GetMapping("/details/{playlistId}")
     public String viewPlaylistDetails(@PathVariable int playlistId, Model model, HttpSession session) throws SQLException {

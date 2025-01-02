@@ -142,4 +142,25 @@ public class SongDaoImpl extends MySQLDao implements SongDao {
         return songs;
     }
 
+    @Override
+    public String getFirstSongName() {
+        String sql = "SELECT title FROM song";
+        String songName = null;
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                songName = rs.getString("title");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error retrieving the first song name: " + e.getMessage());
+        }
+
+        return songName; // Will return null if no songs exist
+    }
+
+
+
 }
