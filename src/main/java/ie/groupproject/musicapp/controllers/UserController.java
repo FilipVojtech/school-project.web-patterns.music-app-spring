@@ -47,49 +47,87 @@ public class UserController {
         return "pages/user/me";
     }
 
-    @PostMapping("/me/edit")
-    public String editUser(
+    @PostMapping("/me/displayName")
+    public String updateDisplayName(
             HttpSession session,
             RedirectAttributes redirectAttributes,
-            @RequestParam(name = "displayName") String displayName,
-            @RequestParam(name = "email") String email,
-            @RequestParam(name = "password") String currentPassword,
-            @RequestParam(name = "newPassword", required = false) String newPassword,
-            @RequestParam(name = "passwordCheck", required = false) String passwordCheck,
-            Locale locale
+            Locale locale,
+            @RequestParam(name = "displayName") String displayName
     ) {
         Form form = new Form();
-        redirectAttributes.addFlashAttribute("form", form);
         var displayNameField = form.addField("displayName", displayName);
-        var emailField = form.addField("email", email);
-        var currentPasswordField = form.addField("password", currentPassword);
-        var newPasswordField = form.addField("newPassword", newPassword);
-        var passwordCheckField = form.addField("passwordCheck", passwordCheck);
 
         User user = (User) session.getAttribute("user");
-        User updatedUser = new User(user);
 
-        //region Current Password Validation
-        if (!BCrypt.checkpw(currentPassword, user.getPassword()))
-            currentPasswordField.addError(messageSource.getMessage("form.errors.incorrectCurrentPassword", null, locale));
-        //endregion
+        if (user == null) {
+            return "redirect:/login";
+        }
 
-        //region Display Name Validation
         if (!displayName.equals(user.getDisplayName())) {
             if (displayName.isBlank())
                 displayNameField.addError(messageSource.getMessage("form.errors.displayNameMissing", null, locale));
             if (displayName.length() > 60)
                 displayNameField.addError(messageSource.getMessage("form.errors.displayNameTooLong", null, locale));
-            if (displayNameField.isValid()) updatedUser.setDisplayName(displayName);
+
+            if (displayNameField.isValid()) user.setDisplayName(displayName);
+            else redirectAttributes.addFlashAttribute("form", form);
+
+            if (userDao.updateUser(user)) session.setAttribute("user", user);
         }
-        //endregion
+
+        return "redirect:/me";
+    }
+
+    @PostMapping("/me/email")
+    public String updateEmail(
+            HttpSession session,
+            RedirectAttributes redirectAttributes,
+            Locale locale,
+            @RequestParam(name = "email") String email
+    ) {
+        Form form = new Form();
+        var emailField = form.addField("email", email);
+
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
 
         //region Email Validation
         if (!email.equalsIgnoreCase(user.getEmail())) {
             if (!FormValidation.isEmail(email))
                 emailField.addError(messageSource.getMessage("form.errors.emailAddressIncorrectFormat", null, locale));
-            if (emailField.isValid()) updatedUser.setEmail(email);
+
+            if (emailField.isValid()) user.setEmail(email);
+            else redirectAttributes.addFlashAttribute("form", form);
+
+            if (userDao.updateUser(user)) session.setAttribute("user", user);
         }
+        //endregion
+
+        return "redirect:/me";
+    }
+
+    @PostMapping("/me/password")
+    public String updatePassword(
+            HttpSession session,
+            RedirectAttributes redirectAttributes,
+            Locale locale,
+            @RequestParam(name = "password") String currentPassword,
+            @RequestParam(name = "newPassword", required = false) String newPassword,
+            @RequestParam(name = "passwordCheck", required = false) String passwordCheck
+    ) {
+        Form form = new Form();
+        var currentPasswordField = form.addField("password", currentPassword);
+        var newPasswordField = form.addField("newPassword", newPassword);
+        var passwordCheckField = form.addField("passwordCheck", passwordCheck);
+
+        User user = (User) session.getAttribute("user");
+
+        //region Current Password Validation
+        if (!BCrypt.checkpw(currentPassword, user.getPassword()))
+            currentPasswordField.addError(messageSource.getMessage("form.errors.incorrectCurrentPassword", null, locale));
         //endregion
 
         //region New Password Validation
@@ -105,15 +143,14 @@ public class UserController {
                 newPasswordField.addError(messageSource.getMessage("form.errors.passwordNoDigit", null, locale));
             if (!FormValidation.hasSpecialChars(newPassword, 1))
                 newPasswordField.addError(messageSource.getMessage("form.errors.passwordNoSpecialCharacter", null, locale));
+
+            if (newPasswordField.isValid() && passwordCheckField.isValid()) user.setPassword(newPwHash);
+            else redirectAttributes.addFlashAttribute("form", form);
+
+            if (userDao.updateUser(user)) session.setAttribute("user", user);
         }
-        if (newPasswordField.isValid() && passwordCheckField.isValid()) updatedUser.setPassword(newPwHash);
         //endregion
 
-        if (form.isValid())
-            if (!updatedUser.equals(user) || !user.getPassword().equals(updatedUser.getPassword())) {
-                UserDao userDao = new UserDaoImpl("database.properties");
-                if (userDao.updateUser(updatedUser)) session.setAttribute("user", updatedUser);
-            }
         return "redirect:/me";
     }
 }
