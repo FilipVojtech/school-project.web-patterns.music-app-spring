@@ -14,7 +14,8 @@
 
 <body>
 <header id="header" th:fragment="header">
-    <nav class="bg-gray-800 flex gap-2 p-2">
+    <nav class="bg-gray-800 flex gap-2 p-2 items-center">
+        <a th:href="@{/}"><img class="h-8" src="/Logo-small.png" alt=""></a>
         <a class="nav-button" th:href="@{/}" th:text="#{navbar.home}"></a>
         <div th:if="${session.user != null}" th:remove="tag">
             <a class="nav-button" th:href="@{/playlists}" th:text="#{navbar.playlists}"></a>
@@ -24,12 +25,14 @@
             <a class="nav-button" th:href="@{/login}" th:text="#{navbar.login}"></a>
             <a class="nav-button" th:href="@{/register}" th:text="#{navbar.register}"></a>
         </div>
-        <div th:if="${session.user != null}" th:remove="tag">
-            <a class="nav-button" th:href="@{/auth/logout}" th:text="#{navbar.logout}"></a>
-        </div>
-        <div class="nav-button" th:if="${session.user != null}" th:text="${session.user.displayName}"></div>
-        <div th:fragment="languageSelect" class="flex ms-auto">
-            <!--/*<div class="text-white" th:text="${#locale.toLanguageTag()}"></div>*/-->
+        <div th:fragment="languageSelect" class="flex ms-auto gap-2">
+            <a
+                class="nav-button"
+                th:href="@{/me}"
+                th:if="${session.user != null}"
+                th:text="${session.user.displayName}"
+            ></a>
+            <!--            <div class="nav-button" th:text="${#locale.toLanguageTag()}"></div>-->
             <form th:action="@{/changeLanguage}">
                 <select
                     name="lang"
@@ -42,6 +45,9 @@
                     <option th:selected="${langTag == 'pt-PT'}" value="pt-PT">Português</option>
                 </select>
             </form>
+            <div th:if="${session.user != null}" th:remove="tag">
+                <a class="nav-button" th:href="@{/auth/logout}" th:text="#{navbar.logout}"></a>
+            </div>
         </div>
     </nav>
 </header>
