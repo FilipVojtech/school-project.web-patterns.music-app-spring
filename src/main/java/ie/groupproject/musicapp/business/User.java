@@ -13,7 +13,7 @@ public class User {
     private @NonNull String email;
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private final String password;
+    private String password;
     private @NonNull String displayName;
 
     public User(@NonNull String email, String password, @NonNull String displayName) {
