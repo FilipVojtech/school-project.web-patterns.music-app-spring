@@ -26,4 +26,16 @@ input[type=number].no-spinner {
     -moz-appearance: textfield;
 }
 
+.save-button {
+    @apply bg-primary text-white p-2 cursor-pointer;
+}
+
+.labelled-field {
+    @apply flex flex-col;
+}
+
+.field {
+    @apply border-t-0 border-x-0 border-2 hover:bg-gray-100 focus:bg-gray-100;
+}
+
 /*endregion*/

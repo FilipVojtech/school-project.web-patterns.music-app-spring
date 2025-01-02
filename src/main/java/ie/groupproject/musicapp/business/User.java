@@ -13,12 +13,19 @@ public class User {
     private @NonNull String email;
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private final String password;
+    private String password;
     private @NonNull String displayName;
 
     public User(@NonNull String email, String password, @NonNull String displayName) {
         this.email = email;
         this.password = password;
         this.displayName = displayName;
+    }
+
+    /**
+     * Copy constructor
+     */
+    public User(User original) {
+        this(original.getId(), original.getEmail(), original.getPassword(), original.getDisplayName());
     }
 }
