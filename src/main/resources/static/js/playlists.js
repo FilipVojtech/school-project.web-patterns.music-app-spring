@@ -38,3 +38,24 @@ async function fetchAndToggleDetails(playlistId) {
         detailsBox.style.display = "none";
     }
 }
+
+async function removeSongFromPlaylist(playlistId, songId) {
+    try {
+        const response = await fetch(`/playlists/${playlistId}/removeSong`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ playlistId, songId })
+        });
+
+        if (response.ok) {
+            alert("Song removed successfully!");
+            fetchAndToggleDetails(playlistId); // Refresh the playlist details
+        } else {
+            alert("Failed to remove the song.");
+        }
+    } catch (error) {
+        console.error("Error removing song:", error);
+    }
+}

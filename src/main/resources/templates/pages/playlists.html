@@ -61,6 +61,26 @@
     .btn:hover {
         background-color: #0056b3;
     }
+
+    .search-results {
+        margin-top: 10px;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+    }
+
+    .search-results ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .search-results li {
+        margin: 5px 0;
+        display: flex;
+        justify-content: space-between;
+    }
 </style>
 <body>
 <!-- Header -->
@@ -105,10 +125,9 @@
                     <td th:text="${playlist.isPublic ? 'Public' : 'Private'}">Visibility</td>
                     <td>
                         <button
-                                type="button"
                                 class="btn"
-                                th:onclick="'fetchAndToggleDetails(' + ${playlist.playlistId} + ')'"
-                        >
+                                type="button"
+                                th:onclick="'fetchAndToggleDetails(' + ${playlist.playlistId} + ')'">
                             View Details
                         </button>
                     </td>
@@ -117,10 +136,55 @@
             </table>
 
             <!-- Song Details -->
-            <div th:each="playlist : ${playlists}" th:id="'details-' + ${playlist.playlistId}" class="song-details-box">
+            <div th:each="playlist : ${playlists}" th:id="'details-' + ${playlist.playlistId}" class="song-details-box" style="display: none;">
                 <h3 th:text="'Songs in ' + ${playlist.name}">Playlist Songs</h3>
                 <ul th:id="'songs-list-' + ${playlist.playlistId}">
                     <!-- Songs will be dynamically loaded here -->
+                </ul>
+            </div>
+        </div>
+
+        </div>
+
+        <div class="mb-6 p-5 border-2 rounded-lg shadow">
+            <h2>Search for a Song</h2>
+
+            <!-- Search Form -->
+            <form action="/playlists/searchSongs" method="get">
+                <div class="form-group">
+                    <label for="searchInput">Search for a Song</label>
+                    <input type="text" id="searchInput" name="keyword" placeholder="Enter song name or artist" required>
+                </div>
+                <button type="submit" class="btn">Search</button>
+            </form>
+
+            <!-- Display Song Information -->
+            <div th:if="${searchResults != null}" class="mb-6 p-5 border-2 rounded-lg shadow">
+                <h3>Search Results</h3>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Artist</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="song : ${searchResults}">
+                        <td th:text="${song.title}">Song Title</td>
+                        <td th:text="${song.artist}">Artist Name</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+
+        <!-- Search Results -->
+            <div class="search-results" id="searchResults" style="display: none;">
+                <h3>Search Results</h3>
+                <ul id="resultsList">
+                    <!-- Search results will be populated here -->
                 </ul>
             </div>
         </div>
@@ -221,7 +285,12 @@
                 // Populate the list with fetched songs
                 songs.forEach(song => {
                     const listItem = document.createElement("li");
-                    listItem.textContent = `${song.title} by ${song.artist}`;
+                    listItem.innerHTML = `
+                        ${song.title} by ${song.artist}
+                        <button class="btn btn-danger" onclick="removeSongFromPlaylist(${playlistId}, ${song.id})">
+                            Remove
+                        </button>
+                    `;
                     songsList.appendChild(listItem);
                 });
 
@@ -233,6 +302,74 @@
         } else {
             // If already visible, hide the details box
             detailsBox.style.display = "none";
+        }
+    }
+
+    async function removeSongFromPlaylist(playlistId, songId) {
+        try {
+            const response = await fetch(`/playlists/${playlistId}/removeSong`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ songId })
+            });
+
+            if (response.ok) {
+                alert("Song removed successfully!");
+                fetchAndToggleDetails(playlistId); // Refresh the playlist details
+            } else {
+                alert("Failed to remove the song.");
+            }
+        } catch (error) {
+            console.error("Error removing song:", error);
+        }
+    }
+
+    async function searchSongs(keyword) {
+        if (!keyword) {
+            document.getElementById("searchResults").style.display = "none";
+            return;
+        }
+
+        try {
+            const response = await fetch(`/playlists/searchSongs?keyword=${encodeURIComponent(keyword)}`);
+            const songs = await response.json();
+
+            const resultsList = document.getElementById("resultsList");
+            resultsList.innerHTML = "";
+
+            songs.forEach(song => {
+                const listItem = document.createElement("li");
+                listItem.innerHTML = `${song.title} by ${song.artist} <button class='btn' onclick='addSongToPlaylist(${song.id})'>Add</button>`;
+                resultsList.appendChild(listItem);
+            });
+
+            document.getElementById("searchResults").style.display = "block";
+        } catch (error) {
+            console.error("Error searching songs:", error);
+        }
+    }
+
+    async function addSongToPlaylist(songId) {
+        const playlistId = document.getElementById("playlistSelect").value;
+
+        try {
+            const response = await fetch(`/playlists/addSong`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ playlistId, songId })
+            });
+
+            if (response.ok) {
+                alert("Song added successfully!");
+            } else {
+                alert("Failed to add song to playlist.");
+            }
+        } catch (error) {
+            console.error("Error adding song to playlist:", error);
         }
     }
 </script>

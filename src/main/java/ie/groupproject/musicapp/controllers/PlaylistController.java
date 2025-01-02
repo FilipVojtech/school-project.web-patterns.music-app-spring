@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -34,21 +35,15 @@ public class PlaylistController {
     // Render the playlists page and display user-specific playlists
     @GetMapping
     public String playlistsPage(Model model, HttpSession session) {
-        // Retrieve the logged-in user
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            // Redirect to login if no user is logged in
             return "redirect:/login";
         }
 
-        // Fetch playlists assigned to the current user
         int userId = currentUser.getId();
         List<Playlist> userPlaylists = playlistDao.getUserPlaylists(userId);
 
-        // Fetch all public playlists
         List<Playlist> publicPlaylists = playlistDao.getPublicPlaylists();
-
-        // Separate public playlists into user's and others'
         List<Playlist> userPublicPlaylists = new ArrayList<>();
         List<Playlist> otherPublicPlaylists = new ArrayList<>();
 
@@ -60,53 +55,43 @@ public class PlaylistController {
             }
         }
 
-        // Add the playlists to the model
         model.addAttribute("playlists", userPlaylists);
         model.addAttribute("userPublicPlaylists", userPublicPlaylists);
         model.addAttribute("otherPublicPlaylists", otherPublicPlaylists);
 
-        return "pages/playlists"; // Render the playlists.html page
+        return "pages/playlists";
     }
 
     // Create a new playlist
     @PostMapping("/create")
     public String createPlaylist(@RequestParam String name, @RequestParam boolean visibility, HttpSession session) {
-        // Check if a user is logged in
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            // Redirect to login if no user is logged in
             return "redirect:/login";
         }
 
-        // Get the logged-in user's ID
         int userId = currentUser.getId();
 
-        // Create the new playlist
         Playlist newPlaylist = Playlist.builder()
                 .name(name)
                 .isPublic(visibility)
-                .userId(userId) // Set the logged-in user's ID as the owner
+                .userId(userId)
                 .build();
 
-        // Save the playlist to the database
         playlistDao.createPlaylist(newPlaylist);
 
-        return "redirect:/playlists"; // Redirect back to the playlists page
+        return "redirect:/playlists";
     }
 
     // Fetch all public playlists
     @GetMapping("/public")
     public String publicPlaylistsPage(Model model, HttpSession session) {
-        // Retrieve the logged-in user
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            return "redirect:/login"; // Redirect to login if no user is logged in
+            return "redirect:/login";
         }
 
-        // Fetch all public playlists
         List<Playlist> publicPlaylists = playlistDao.getPublicPlaylists();
-
-        // Separate public playlists into user's and others'
         int userId = currentUser.getId();
         List<Playlist> userPublicPlaylists = new ArrayList<>();
         List<Playlist> otherPublicPlaylists = new ArrayList<>();
@@ -119,27 +104,107 @@ public class PlaylistController {
             }
         }
 
-        // Add playlists to the model
         model.addAttribute("userPublicPlaylists", userPublicPlaylists);
         model.addAttribute("otherPublicPlaylists", otherPublicPlaylists);
 
-        return "pages/publicPlaylists"; // Render a page for public playlists
+        return "pages/publicPlaylists";
     }
 
     // Fetch songs for a specific playlist
     @GetMapping("/{playlistId}/songs")
     @ResponseBody
     public List<Map<String, String>> getPlaylistSongs(@PathVariable int playlistId) throws SQLException {
-        List<Song> songs = songDao.getSongsByPlaylist(playlistId); // Fetch songs for the playlist
+        List<Song> songs = songDao.getSongsByPlaylist(playlistId);
         List<Map<String, String>> songDetails = new ArrayList<>();
 
         for (Song song : songs) {
             Map<String, String> songDetail = new HashMap<>();
             songDetail.put("title", song.getTitle());
-            songDetail.put("artist", songDao.getArtistName(song.getArtist_id())); // Get artist name
+            songDetail.put("artist", songDao.getArtistName(song.getArtist_id()));
             songDetails.add(songDetail);
         }
 
-        return songDetails; // Return song details as JSON
+        return songDetails;
+    }
+
+    // Search for songs
+    @GetMapping("/searchSongs")
+    public String searchSongs(@RequestParam String keyword, @RequestParam int playlistId, Model model, HttpSession session) throws SQLException {
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        // Fetch songs matching the keyword
+        List<Song> searchResults = songDao.searchSongs(keyword);
+
+        // Add data to the model
+        model.addAttribute("searchResults", searchResults);
+        model.addAttribute("selectedPlaylistId", playlistId); // Pass the selected playlist ID back
+        model.addAttribute("keyword", keyword);
+
+        return "pages/playlists"; // Ensure this matches your template
+    }
+
+    // Add a song to a playlist
+    @PostMapping("/addSong")
+    public String addSongToPlaylist(@RequestParam int playlistId, @RequestParam int songId, HttpSession session) {
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        playlistDao.addSongToPlaylist(playlistId, songId);
+
+        return "redirect:/playlists";
+    }
+
+    // Remove a song from a playlist
+    @PostMapping("/{playlistId}/removeSong")
+    public String removeSongFromPlaylist(
+            @PathVariable int playlistId,
+            @RequestParam int songId,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        boolean success = playlistDao.removeSongFromPlaylist(playlistId, songId);
+
+        if (success) {
+            redirectAttributes.addFlashAttribute("message", "Song removed successfully!");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Failed to remove the song.");
+        }
+
+        return "redirect:/playlists"; // Redirect back to the playlists page
+    }
+
+
+    @GetMapping("/details/{playlistId}")
+    public String viewPlaylistDetails(@PathVariable int playlistId, Model model, HttpSession session) throws SQLException {
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        Playlist selectedPlaylist = playlistDao.getPlaylistById(playlistId);
+        if (selectedPlaylist == null || selectedPlaylist.getUserId() != currentUser.getId()) {
+            return "redirect:/playlists"; // Redirect if the playlist does not belong to the user
+        }
+
+        List<Song> songs = songDao.getSongsByPlaylist(playlistId);
+
+        // Fetch all playlists for the sidebar
+        List<Playlist> userPlaylists = playlistDao.getUserPlaylists(currentUser.getId());
+
+        model.addAttribute("playlists", userPlaylists);
+        model.addAttribute("selectedPlaylist", selectedPlaylist);
+        model.addAttribute("songs", songs);
+
+        return "pages/playlists"; // Render the same playlists page with the selected playlist's songs
     }
 }

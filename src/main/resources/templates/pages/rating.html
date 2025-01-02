@@ -13,50 +13,31 @@
         <!-- Search and Rate Songs -->
         <div class="mb-6 p-5 border-2 rounded-lg shadow">
             <h2>Search for a Song</h2>
-            <form action="/songs/search" method="get" class="search-form">
+            <form action="/searchSongs" method="get" class="search-form">
                 <input type="text" name="query" placeholder="Search songs by name" required>
                 <button type="submit" class="btn">Search</button>
             </form>
         </div>
 
-        <!-- Song Rating Form -->
-        <div class="mb-6 p-5 border-2 rounded-lg shadow">
-            <h2>Rate a Song</h2>
-            <form action="/songs/rate" method="post" class="rating-form">
-                <div class="form-group">
-                    <label for="songName">Song Name</label>
-                    <input type="text" id="songName" name="songName" placeholder="Enter song name" required>
-                </div>
-                <div class="form-group">
-                    <label for="rating">Rating (1-5)</label>
-                    <select id="rating" name="rating" required>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn">Rate Song</button>
-            </form>
-        </div>
 
         <!-- Display Search Results (after search) -->
         <div class="mb-6 p-5 border-2 rounded-lg shadow">
             <h2>Search Results</h2>
             <ul class="song-list">
-                <li th:each="song : ${songs}">
+                <li th:each="song : ${searchResults}">
                     <div class="song-item">
-                        <h3 th:text="${song.name}">Song Name</h3>
-                        <p>Artist: <span th:text="${song.artist}">Artist Name</span></p>
-                        <form action="/songs/rate" method="post" class="rating-form">
+                        <h3 th:text="${song.getTitle()}">Song Name</h3>
+                        <p>Artist's Id: <span th:text="${song.getArtist_id()}">Artist Name</span></p>
+
+                        <form action="/rate" method="post" class="rating-form">
+                            <input type = "hidden" name = "songId" th:value="${song.getId()}">
                             <label for="songRating">Rate This Song</label>
                             <select id="songRating" name="rating" required>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
+                                <option value="1" th:selected = "${song.getRating()==1}">1</option>
+                                <option value="2" th:selected = "${song.getRating()==2}">2</option>
+                                <option value="3" th:selected = "${song.getRating()==3}">3</option>
+                                <option value="4" th:selected = "${song.getRating()==4}">4</option>
+                                <option value="5" th:selected = "${song.getRating()==5}">5</option>
                             </select>
                             <button type="submit" class="btn btn-small">Submit Rating</button>
                         </form>
@@ -64,7 +45,6 @@
                 </li>
             </ul>
         </div>
-
     </section>
 </main>
 </body>

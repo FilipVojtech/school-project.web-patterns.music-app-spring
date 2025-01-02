@@ -67,10 +67,13 @@ public class SongDaoImpl extends MySQLDao implements SongDao {
     public List<Song> searchSongs(String keyword) {
         List<Song> songs = new ArrayList<>();
         Connection conn = super.getConnection();
-        String sql = "SELECT s.* FROM songs s " +
-                "JOIN albums a ON s.album_id = a.id " +
-                "JOIN artists ar ON a.artist_id = ar.id " +
-                "WHERE s.title LIKE ? OR a.title LIKE ? OR ar.name LIKE ?";
+        String sql = "SELECT s.* " +
+                     "FROM song s " +
+                     "     JOIN music_app.album a ON s.artist_id = a.artist_id " +
+                     "     JOIN music_app.artist ar ON ar.id = a.artist_id " +
+                     "WHERE s.title LIKE ? " +
+                     "   OR a.title LIKE ? " +
+                     "   OR ar.name LIKE ?;";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             String searchPattern = "%" + keyword + "%";
@@ -84,7 +87,7 @@ public class SongDaoImpl extends MySQLDao implements SongDao {
                 Song song = new Song();
                 song.setId(resultSet.getInt("id"));
                 song.setTitle(resultSet.getString("title"));
-                song.setAlbumId(resultSet.getInt("album_id"));
+                song.setArtist_id(resultSet.getInt("artist_id"));
                 songs.add(song); // Add the song to the list
             }
         } catch (SQLException e) {
@@ -141,5 +144,26 @@ public class SongDaoImpl extends MySQLDao implements SongDao {
 
         return songs;
     }
+
+    @Override
+    public String getFirstSongName() {
+        String sql = "SELECT title FROM song";
+        String songName = null;
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                songName = rs.getString("title");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error retrieving the first song name: " + e.getMessage());
+        }
+
+        return songName; // Will return null if no songs exist
+    }
+
+
 
 }
