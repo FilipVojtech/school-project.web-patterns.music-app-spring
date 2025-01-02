@@ -1,47 +1,68 @@
 <!DOCTYPE html>
 <html th:lang="${#locale.language}">
-<div th:replace="~{ fragments/structure :: head (#{page.me.title}, true) }"></div>
+<div th:replace="~{ fragments/structure :: head (${session.user.displayName}, true) }"></div>
 <body>
 <div th:replace="~{ fragments/structure :: header }"></div>
-<div id="content">
-    <form class="flex flex-col gap-2" action="/me/edit" method="post">
-        <div class="labelled-field">
-            <label for="displayName" th:text="#{form.displayName}"></label>
-            <input
-                class="field"
-                type="text"
-                id="displayName"
-                name="displayName"
-                th:value="${form.getValue('displayName')}"
-                required
-            >
-            <div th:replace="~{ fragments/form :: errorFor('displayName') }"></div>
-        </div>
-        <div class="labelled-field">
-            <label for="email" th:text="#{form.email}"></label>
-            <input class="field" type="email" name="email" id="email" th:value="${form.getValue('email')}" required>
-            <div th:replace="~{ fragments/form :: errorFor('email') }"></div>
-        </div>
-        <div class="labelled-field">
-            <label for="password" th:text="#{form.currentPassword}"></label>
-            <input class="field" type="password" name="password" id="password" required>
-            <div th:replace="~{ fragments/form :: errorFor('password') }"></div>
-        </div>
-        <div class="labelled-field">
-            <label for="newPassword" th:text="#{form.newPassword}"></label>
-            <input class="field" type="password" name="newPassword" id="newPassword">
-            <div th:replace="~{ fragments/form :: errorFor('newPassword') }"></div>
-        </div>
-        <div class="labelled-field">
-            <label for="passwordCheck" th:text="#{form.newPasswordRepeat}"></label>
-            <input class="field" type="password" name="passwordCheck" id="passwordCheck">
-            <div th:replace="~{ fragments/form :: errorFor('passwordCheck') }"></div>
-        </div>
-        <div class="labelled-field">
-            <div th:replace="~{ fragments/form :: formErrors }"></div>
-            <input class="save-button" type="submit" th:value="#{form.save}">
-        </div>
-    </form>
+<div id="content" class="w-1/2 mx-auto">
+    <h1 class="text-center text-3xl font-bold mb-3" th:text="#{page.me.title(${session.user.displayName})}"></h1>
+
+    <div class="flex flex-col gap-10">
+        <form class="flex flex-col gap-2" action="/me/displayName" method="post">
+            <h2 class="text-xl" th:text="#{form.displayName}"></h2>
+            <div class="labelled-field">
+                <label for="displayName" th:utext="#{form.displayName}"></label>
+                <input
+                    class="field"
+                    type="text"
+                    id="displayName"
+                    name="displayName"
+                    th:value="${form.getValue('displayName')}"
+                    required
+                >
+                <div th:replace="~{ fragments/form :: errorFor('displayName') }"></div>
+            </div>
+            <div class="labelled-field">
+                <div th:replace="~{ fragments/form :: formErrors }"></div>
+                <input class="save-button" type="submit" th:value="#{form.updateDisplayName}">
+            </div>
+        </form>
+
+        <form class="flex flex-col gap-2" action="/me/email" method="post">
+            <h2 class="text-xl" th:text="#{form.email}"></h2>
+            <div class="labelled-field">
+                <label for="email" th:text="#{form.email}"></label>
+                <input class="field" type="email" name="email" id="email" th:value="${form.getValue('email')}" required>
+                <div th:replace="~{ fragments/form :: errorFor('email') }"></div>
+            </div>
+            <div class="labelled-field">
+                <div th:replace="~{ fragments/form :: formErrors }"></div>
+                <input class="save-button" type="submit" th:value="#{form.updateEmail}">
+            </div>
+        </form>
+
+        <form class="flex flex-col gap-2" action="/me/password" method="post">
+            <h2 class="text-xl" th:text="#{form.password}"></h2>
+            <div class="labelled-field">
+                <label for="password" th:text="#{form.currentPassword}"></label>
+                <input class="field" type="password" name="password" id="password" required>
+                <div th:replace="~{ fragments/form :: errorFor('password') }"></div>
+            </div>
+            <div class="labelled-field">
+                <label for="newPassword" th:text="#{form.newPassword}"></label>
+                <input class="field" type="password" name="newPassword" id="newPassword">
+                <div th:replace="~{ fragments/form :: errorFor('newPassword') }"></div>
+            </div>
+            <div class="labelled-field">
+                <label for="passwordCheck" th:text="#{form.newPasswordRepeat}"></label>
+                <input class="field" type="password" name="passwordCheck" id="passwordCheck">
+                <div th:replace="~{ fragments/form :: errorFor('passwordCheck') }"></div>
+            </div>
+            <div class="labelled-field">
+                <div th:replace="~{ fragments/form :: formErrors }"></div>
+                <input class="save-button" type="submit" th:value="#{form.updatePassword}">
+            </div>
+        </form>
+    </div>
 </div>
 </body>
 </html>
