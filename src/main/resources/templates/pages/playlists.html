@@ -124,77 +124,60 @@
                     <td th:text="${playlist.name}">Playlist Name</td>
                     <td th:text="${playlist.isPublic ? 'Public' : 'Private'}">Visibility</td>
                     <td>
-                        <!-- Form to view playlist details -->
-                        <form th:action="'/playlists/details/' + ${playlist.playlistId}" method="get">
-                            <button type="submit" class="btn">View Details</button>
-                        </form>
+                        <button
+                                class="btn"
+                                type="button"
+                                th:onclick="'fetchAndToggleDetails(' + ${playlist.playlistId} + ')'">
+                            View Details
+                        </button>
                     </td>
                 </tr>
                 </tbody>
             </table>
 
-            <!-- Display Playlist Songs -->
-            <div th:if="${selectedPlaylist != null}" class="song-details-box">
-                <h3 th:text="'Songs in ' + ${selectedPlaylist.name}">Playlist Songs</h3>
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Artist</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="song : ${songs}">
-                        <td th:text="${song.title}">Song Title</td>
-                        <td th:text="${song.artistName}">Artist Name</td>
-                        <td>
-                            <!-- Form to remove song -->
-                            <form th:action="'/playlists/' + ${selectedPlaylist.id} + '/removeSong'" method="post">
-                                <input type="hidden" name="songId" th:value="${song.id}">
-                                <button type="submit" class="btn">Remove</button>
-                            </form>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+            <!-- Song Details -->
+            <div th:each="playlist : ${playlists}" th:id="'details-' + ${playlist.playlistId}" class="song-details-box" style="display: none;">
+                <h3 th:text="'Songs in ' + ${playlist.name}">Playlist Songs</h3>
+                <ul th:id="'songs-list-' + ${playlist.playlistId}">
+                    <!-- Songs will be dynamically loaded here -->
+                </ul>
             </div>
         </div>
 
         </div>
 
         <div class="mb-6 p-5 border-2 rounded-lg shadow">
-            <h2>Search and Add Song to Playlist</h2>
+            <h2>Search for a Song</h2>
+
             <!-- Search Form -->
             <form action="/playlists/searchSongs" method="get">
                 <div class="form-group">
                     <label for="searchInput">Search for a Song</label>
                     <input type="text" id="searchInput" name="keyword" placeholder="Enter song name or artist" required>
                 </div>
-                <div class="form-group">
-                    <label for="playlistSelect">Select Playlist</label>
-                    <select id="playlistSelect" name="playlistId" required>
-                        <option th:each="playlist : ${playlists}" th:value="${playlist.playlistId}" th:text="${playlist.name}"></option>
-                    </select>
-                </div>
                 <button type="submit" class="btn">Search</button>
             </form>
 
-            <!-- Search Results -->
-            <div th:if="${searchResults != null}" class="search-results">
+            <!-- Display Song Information -->
+            <div th:if="${searchResults != null}" class="mb-6 p-5 border-2 rounded-lg shadow">
                 <h3>Search Results</h3>
-                <ul>
-                    <li th:each="song : ${searchResults}">
-                        <span th:text="${song.title} + ' by ' + ${song.artist}"></span>
-                        <!-- Add Song to Playlist Form -->
-                        <form action="/playlists/addSong" method="post" style="display: inline;">
-                            <input type="hidden" name="playlistId" th:value="${selectedPlaylistId}">
-                            <button type="submit" class="btn" name="songId" th:value="${song.id}">Add to Playlist</button>
-                        </form>
-                    </li>
-                </ul>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Artist</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="song : ${searchResults}">
+                        <td th:text="${song.title}">Song Title</td>
+                        <td th:text="${song.artist}">Artist Name</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
+
 
 
         <!-- Search Results -->

@@ -16,4 +16,6 @@ public interface SongDao {
     List<Song> getSongsByPlaylist(int playlistId) throws SQLException;
 
     String getArtistName(int artistId) throws SQLException;
+
+    String getFirstSongName();
 }
