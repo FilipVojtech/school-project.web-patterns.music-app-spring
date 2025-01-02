@@ -4,6 +4,7 @@ import ie.groupproject.musicapp.business.User;
 import ie.groupproject.musicapp.persistence.exceptions.EmailAddressAlreadyUsed;
 import ie.groupproject.musicapp.persistence.exceptions.RecordNotFound;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,6 +15,7 @@ import java.text.MessageFormat;
 /**
  * @author Filip Vojtěch
  */
+@Slf4j
 public class UserDaoImpl extends MySQLDao implements UserDao {
     public UserDaoImpl() {
         super();
@@ -65,7 +67,7 @@ public class UserDaoImpl extends MySQLDao implements UserDao {
             final var result = ps.executeQuery();
 
             if (result.next()) {
-                User user =  new User(
+                User user = new User(
                         result.getInt("id"),
                         result.getString("email"),
                         result.getString("password"),
@@ -102,6 +104,24 @@ public class UserDaoImpl extends MySQLDao implements UserDao {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.out.println("Couldn't create user.");
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateUser(@NonNull User newUserData) {
+        final var sql = "UPDATE users SET display_name = ?, email = ?, password = ? WHERE id = ?";
+
+        try (Connection con = super.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, newUserData.getDisplayName());
+            ps.setString(2, newUserData.getEmail());
+            ps.setString(3, newUserData.getPassword());
+            ps.setInt(4, newUserData.getId());
+
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            log.error("Could not update user with ID={}", newUserData.getId());
         }
         return false;
     }
