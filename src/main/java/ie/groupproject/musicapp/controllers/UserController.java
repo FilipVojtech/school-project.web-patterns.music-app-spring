@@ -20,9 +20,11 @@ import java.util.Locale;
 @Controller
 public class UserController {
     private final MessageSource messageSource;
+    private final UserDao userDao;
 
     public UserController(MessageSource messageSource) {
         this.messageSource = messageSource;
+        this.userDao = new UserDaoImpl("database.properties");
     }
 
     @GetMapping("/me")
