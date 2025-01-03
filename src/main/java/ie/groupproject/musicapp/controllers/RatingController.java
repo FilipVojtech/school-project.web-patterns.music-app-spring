@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -27,15 +28,24 @@ public class RatingController {
     }
 
     @GetMapping("/rating")
-    public String getFirstSongName(Model model, HttpSession session) {
+    public String showRatingPage(Model model, HttpSession session) throws SQLException {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
             return "redirect:/login"; // Ensure the user is logged in
         }
 
-        // Fetch the first song name
-        String songName = songDao.getFirstSongName();
-        model.addAttribute("songName", songName); // Add it to the model
+        // Fetch all songs
+        List<Song> allSongs = songDao.getAllSongs();
+        model.addAttribute("allSongs", allSongs);
+
+        // Fetch top-rated song
+        Song topRatedSong = ratingDao.getTopRatedSong();
+        Song mostPopularSong = ratingDao.getMostPopularSong();
+
+        model.addAttribute("topRatedSong", topRatedSong);
+        model.addAttribute("mostPopularSong", mostPopularSong);
+
+
         return "pages/rating"; // Render the "rating.html" page
     }
 
@@ -53,7 +63,7 @@ public class RatingController {
         model.addAttribute("searchResults", searchResults);
         model.addAttribute("keyword", query);
 
-        return "pages/rating"; // Ensure this matches your template
+        return "pages/rating";
     }
 
     @PostMapping("/rate")
@@ -83,4 +93,9 @@ public class RatingController {
         return "pages/rating";
     }
 
+    @GetMapping("/mostPopularSong")
+    @ResponseBody
+    public Song getMostPopularSong() {
+        return ratingDao.getMostPopularSong();
+    }
 }
