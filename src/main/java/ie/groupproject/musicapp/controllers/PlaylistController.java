@@ -127,23 +127,21 @@ public class PlaylistController {
         return songDetails;
     }
 
-    // Search for songs
-    @GetMapping("/searchSongs")
-    public String searchSongs(@RequestParam String keyword, @RequestParam int playlistId, Model model, HttpSession session) throws SQLException {
+    @GetMapping("/searchPlaylistSongs")
+    public String searchPlaylistSongs(@RequestParam String query, Model model, HttpSession session) throws SQLException {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
             return "redirect:/login";
         }
 
         // Fetch songs matching the keyword
-        List<Song> searchResults = songDao.searchSongs(keyword);
+        List<Song> searchResults = songDao.searchSongs(query);
 
         // Add data to the model
         model.addAttribute("searchResults", searchResults);
-        model.addAttribute("selectedPlaylistId", playlistId); // Pass the selected playlist ID back
-        model.addAttribute("keyword", keyword);
+        model.addAttribute("keyword", query);
 
-        return "pages/playlists"; // Ensure this matches your template
+        return "pages/playlists";
     }
 
     // Add a song to a playlist
@@ -180,7 +178,30 @@ public class PlaylistController {
             redirectAttributes.addFlashAttribute("error", "Failed to remove the song.");
         }
 
-        return "redirect:/playlists"; // Redirect back to the playlists page
+        return "redirect:/playlists"; // Ensure this redirect is accurate
+    }
+
+    @PostMapping("/{playlistId}/rename")
+    public String renamePlaylist(
+            @PathVariable int playlistId,
+            @RequestParam String newName,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        boolean success = playlistDao.renamePlaylist(playlistId, newName);
+
+        if (success) {
+            redirectAttributes.addFlashAttribute("message", "Playlist renamed successfully!");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Failed to rename the playlist.");
+        }
+
+        return "redirect:/playlists";
     }
 
 
