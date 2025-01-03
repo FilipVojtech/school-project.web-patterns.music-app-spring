@@ -59,9 +59,15 @@ public class RatingController {
         // Fetch songs matching the keyword
         List<Song> searchResults = songDao.searchSongs(query);
 
+        // Fetch top-rated song and most popular song to keep them displayed
+        Song topRatedSong = ratingDao.getTopRatedSong();
+        Song mostPopularSong = ratingDao.getMostPopularSong();
+
         // Add data to the model
         model.addAttribute("searchResults", searchResults);
         model.addAttribute("keyword", query);
+        model.addAttribute("topRatedSong", topRatedSong);
+        model.addAttribute("mostPopularSong", mostPopularSong);
 
         return "pages/rating";
     }
