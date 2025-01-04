@@ -34,9 +34,6 @@ public class RatingController {
             return "redirect:/login"; // Ensure the user is logged in
         }
 
-        // Fetch all songs
-        List<Song> allSongs = songDao.getAllSongs();
-        model.addAttribute("allSongs", allSongs);
 
         // Fetch top-rated song
         Song topRatedSong = ratingDao.getTopRatedSong();
