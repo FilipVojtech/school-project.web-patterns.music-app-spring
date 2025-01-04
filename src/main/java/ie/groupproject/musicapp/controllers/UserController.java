@@ -58,6 +58,18 @@ public class UserController {
         }
 
         model.addAttribute("page", "/me/subscription");
+        model.addAttribute("subscriptionEndDate", user.getSubscriptionEnd());
+
+        Form form = (Form) model.getAttribute("form");
+        if (form == null) {
+            form = new Form();
+            model.addAttribute("form", form);
+            form.addField("cardName", "");
+            form.addField("cardNumber", "");
+            form.addField("cardMonth", "");
+            form.addField("cardYear", "");
+            form.addField("cardSecCode", "");
+        }
 
         return "pages/user/subscription";
     }
