@@ -55,7 +55,8 @@ public class AuthController {
         redirectAttributes.addFlashAttribute("form", form);
 
         //region Email Validation
-        if (!FormValidation.isEmail(email)) emailField.addError(messageSource.getMessage("form.errors.emailAddressIncorrectFormat", null, locale));
+        if (!FormValidation.isEmail(email))
+            emailField.addError(messageSource.getMessage("form.errors.emailAddressIncorrectFormat", null, locale));
         //endregion
 
         User user;
@@ -142,16 +143,15 @@ public class AuthController {
         //endregion
 
         //region Password Validation
-        if (!password.equals(passwordCheck)) {
+        if (!password.equals(passwordCheck))
             passwordCheckField.addError(messageSource.getMessage("form.errors.passwordMismatch", null, locale));
-        }
 
-        if (password.length() < 10) {
+        if (password.length() < 10)
             passwordField.addError(messageSource.getMessage("form.errors.passwordIsShort", null, locale));
-        }
         if (!FormValidation.hasUppercase(password, 1))
             passwordField.addError(messageSource.getMessage("form.errors.passwordNoUppercase", null, locale));
-        if (!FormValidation.hasDigits(password, 1)) passwordField.addError(messageSource.getMessage("form.errors.passwordNoDigit", null, locale));
+        if (!FormValidation.hasDigits(password, 1))
+            passwordField.addError(messageSource.getMessage("form.errors.passwordNoDigit", null, locale));
         if (!FormValidation.hasSpecialChars(password, 1))
             passwordField.addError(messageSource.getMessage("form.errors.passwordNoSpecialCharacter", null, locale));
         //endregion
@@ -173,7 +173,8 @@ public class AuthController {
 
                 card = new CreditCard(cardNum, expiration, cardSecCode, cardName);
 
-                if (card.isExpired()) form.addError(messageSource.getMessage("form.errors.cardAlreadyExpired", null, locale));
+                if (card.isExpired())
+                    form.addError(messageSource.getMessage("form.errors.cardAlreadyExpired", null, locale));
             } catch (IllegalArgumentException e) {
                 form.addError(messageSource.getMessage("form.errors.cardRecheck", null, locale));
             } catch (InvalidCardNumberException e) {
@@ -190,7 +191,7 @@ public class AuthController {
         }
 
         String hashedPw = BCrypt.hashpw(password, BCrypt.gensalt(14));
-        User newUser = new User(email, hashedPw, displayName);
+        User newUser = new User(email, hashedPw, displayName, LocalDate.now(), LocalDate.now().until(LocalDate.now().plusMonths(12)).getDays());
 
         userDao.createUser(newUser);
         log.info("Created a new user '{}'", newUser.getEmail());
