@@ -49,6 +49,19 @@ public class UserController {
         return "pages/user/account";
     }
 
+    @GetMapping("/me/subscription")
+    public String subscriptionPage(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("page", "/me/subscription");
+
+        return "pages/user/subscription";
+    }
+
     @PostMapping("/me/displayName")
     public String updateDisplayName(
             HttpSession session,
