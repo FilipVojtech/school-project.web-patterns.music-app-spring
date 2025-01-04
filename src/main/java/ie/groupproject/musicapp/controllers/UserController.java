@@ -27,7 +27,7 @@ public class UserController {
         this.userDao = new UserDaoImpl("database.properties");
     }
 
-    @GetMapping("/me")
+    @GetMapping("/me/account")
     public String userPage(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
 
@@ -44,7 +44,7 @@ public class UserController {
             var passwordCheckField = form.addField("passwordCheck", "");
         }
 
-        return "pages/user/me";
+        return "pages/user/account";
     }
 
     @PostMapping("/me/displayName")
