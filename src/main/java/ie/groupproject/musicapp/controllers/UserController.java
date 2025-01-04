@@ -33,6 +33,8 @@ public class UserController {
 
         if (user == null) return "redirect:/";
 
+        model.addAttribute("page", "/me/account");
+
         Form form = (Form) model.getAttribute("form");
         if (form == null) {
             form = new Form();
