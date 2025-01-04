@@ -6,7 +6,9 @@ CREATE TABLE users (
                           id INT AUTO_INCREMENT PRIMARY KEY,
                           email VARCHAR(255) NOT NULL,
                           password VARCHAR(255) NOT NULL,
-                          display_name VARCHAR(255)
+                          display_name VARCHAR(255),
+                          sub_since DATE,
+                          sub_for_days INT DEFAULT 0 CHECK ( sub_for_days >= 0 )  -- Subscription days must be positive
 );
 
 CREATE TABLE artist (
