@@ -30,7 +30,7 @@
             <div th:fragment="languageSelect" class="contents sm:flex sm:ms-auto gap-2">
                 <a
                     class="nav-button"
-                    th:href="@{/me}"
+                    th:href="@{/me/account}"
                     th:if="${session.user != null}"
                     th:text="${session.user.displayName}"
                 ></a>
