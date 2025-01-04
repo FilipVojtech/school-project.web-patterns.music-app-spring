@@ -35,7 +35,24 @@ public class User {
         this(original.getId(), original.getEmail(), original.getPassword(), original.getDisplayName(), original.getSubscriptionSince(), original.getSubscriptionForDays());
     }
 
+    /**
+     * Extends the user subscription by one year.
+     */
+    public void extendSubscription() {
+        if (subscriptionSince == null) subscriptionSince = LocalDate.now();
+
+        var currentEndDate = getSubscriptionEnd();
+
+        subscriptionForDays = currentEndDate.until(currentEndDate.plusMonths(12)).getDays();
+    }
+
+    /**
+     * Calculates the subscription end date.
+     * @return Subscription end date.
+     */
     public LocalDate getSubscriptionEnd() {
+        if (subscriptionSince == null) return null;
+
         return subscriptionSince.plusDays(subscriptionForDays);
     }
 }
