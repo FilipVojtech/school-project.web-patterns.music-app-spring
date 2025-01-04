@@ -87,55 +87,57 @@
 <header th:replace="~{fragments/structure :: header}"></header>
 <main>
     <section class="container">
-        <h1>Playlists</h1>
+        <h2 th:text="#{page.playlist.Playlist}">Playlists</h2>
 
         <!-- Create Playlist Form -->
         <div class="mb-6 p-5 border-2 rounded-lg shadow">
-            <h2>Create a New Playlist</h2>
+            <h2 th:text="#{page.playlist.Create.New.Playlist}">Create a New Playlist</h2>
             <form action="/playlists/create" method="post">
                 <div class="form-group">
-                    <label for="playlistName">Playlist Name</label>
-                    <input type="text" id="playlistName" name="name" placeholder="Enter playlist name" required>
+                    <label for="playlistName" th:text="#{page.playlist.Playlist.Name}">Playlist Name</label>
+                    <input type="text" id="playlistName" name="name" th:text="#{page.playlist.Enter.Playlist.Name}" placeholder="Enter playlist name" required>
                 </div>
                 <div class="form-group">
-                    <label for="visibility">Visibility</label>
+                    <label for="visibility" th:text="#{page.playlist.visibility}">Visibility</label>
                     <select id="visibility" name="visibility">
-                        <option value="true">Public</option>
-                        <option value="false">Private</option>
+                        <option value="true" th:text="#{page.playlist.Public}">Public</option>
+                        <option value="false" th:text="#{page.playlist.Private}">Private</option>
                     </select>
                 </div>
-                <button type="submit" class="btn">Create Playlist</button>
+                <button type="submit" class="btn" th:text="#{page.playlist.Create.Playlist}">Create Playlist</button>
             </form>
         </div>
 
         <!-- Display User Playlists -->
         <div class="mb-6 p-5 border-2 rounded-lg shadow">
-            <h2>Your Playlists</h2>
+            <h2 th:text="#{page.playlist.Your.Playlist}">Your Playlists</h2>
             <table class="table">
                 <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Visibility</th>
-                    <th>Actions</th>
+                    <th th:text="#{page.playlist.Name}">Name</th>
+                    <th th:text="#{page.playlist.Visibility}">Visibility</th>
+                    <th th:text="#{page.playlist.Actions}"> Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="playlist : ${playlists}">
                     <td>
-                        <span th:text="${playlist.name}" th:id="'playlist-name-' + ${playlist.playlistId}">Playlist Name</span>
+                        <span th:text="#{page.playlist.Playlist.Name}" th:id="'playlist-name-' + ${playlist.playlistId}">Playlist Name</span>
                     </td>
-                    <td th:text="${playlist.isPublic ? 'Public' : 'Private'}">Visibility</td>
+                    <td th:text="${playlist.isPublic ? 'Public' : 'Private'}" >Visibility</td>
                     <td>
                         <button
                                 class="btn"
                                 type="button"
-                                th:onclick="'fetchAndToggleDetails(' + ${playlist.playlistId} + ')'">
+                                th:onclick="'fetchAndToggleDetails(' + ${playlist.playlistId} + ')'"
+                                th:text="#{page.playlist.View.Details}">
                             View Details
                         </button>
                         <button
                                 class="btn btn-secondary"
                                 type="button"
-                                th:onclick="'toggleRenameForm(' + ${playlist.playlistId} + ')'">
+                                th:onclick="'toggleRenameForm(' + ${playlist.playlistId} + ')'"
+                                th:text="#{page.playlist.Rename}">
                             Rename
                         </button>
                         <!-- Rename Playlist Form -->
@@ -149,7 +151,7 @@
                                     name="newName"
                                     placeholder="Enter new playlist name"
                                     required>
-                            <button type="submit" class="btn btn-success">Save</button>
+                            <button type="submit" class="btn btn-success" th:text="#{page.playlist.Save}">Save</button>
                         </form>
                     </td>
                 </tr>
@@ -158,7 +160,7 @@
 
             <!-- Song Details -->
             <div th:each="playlist : ${playlists}" th:id="'details-' + ${playlist.playlistId}" class="song-details-box" style="display: none;">
-                <h3 th:text="'Songs in ' + ${playlist.name}">Playlist Songs</h3>
+                <h3 th:text="'Songs in ' + ${playlist.name} ">Playlist Songs</h3>
                 <ul th:id="'songs-list-' + ${playlist.playlistId}">
                     <!-- Songs will be dynamically loaded here -->
                 </ul>
@@ -170,21 +172,21 @@
 
         <!-- Search Form -->
             <div class="mb-6 p-5 border-2 rounded-lg shadow">
-                <h2>Search for a Song</h2>
-                <form action="" method="get" class="search-form">
+                <h2 th:text="#{page.playlist.Search.For.A.Song}">Search for a Song</h2>
+                <form action="/playlists/searchPlaylistSongs" method="get" class="search-form">
                     <input type="text" name="query" placeholder="Search songs by name" required>
-                    <button type="submit" class="btn">Search</button>
+                    <button type="submit" class="btn" th:text="#{page.playlist.Search}">Search</button>
                 </form>
             </div>
 
             <!-- Display Search Results (after search) -->
             <div class="mb-6 p-5 border-2 rounded-lg shadow">
-                <h2>Search Results</h2>
+                <h2 >Search Results</h2>
                 <ul class="song-list">
                     <li th:each="song : ${searchResults}">
                         <div class="song-item">
-                            <h3 th:text="${song.getTitle()}">Song Name</h3>
-                            <p>Artist's Id: <span th:text="${song.getArtist_id()}">Artist Name</span></p>
+                            <h3 th:text="${song.getTitle()}" >Song Name</h3>
+                            <p >Artist's Id: <span th:text="${song.getArtist_id()} #{page.playlist.Artist.Name}">Artist Name</span></p>
 
                         </div>
                     </li>
@@ -193,12 +195,12 @@
 
             <!-- Display Song Information -->
             <div th:if="${searchResults != null}" class="mb-6 p-5 border-2 rounded-lg shadow">
-                <h3>Search Results</h3>
+                <h3 th:text="${page.playlist.Search.Results}">Search Results</h3>
                 <table class="table">
                     <thead>
                     <tr>
-                        <th>Title</th>
-                        <th>Artist</th>
+                        <th th:text="${page.playlist.Title}">Title</th>
+                        <th th:text="${page.playlist.Artists}">Artist</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -231,20 +233,21 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <th>Playlist Name</th>
-                    <th>Owner</th>
-                    <th>Actions</th>
+                    <th >Playlist Name</th>
+                    <th >Owner</th>
+                    <th >Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="playlist : ${userPublicPlaylists}">
-                    <td th:text="${playlist.name}">Playlist Name</td>
-                    <td>You</td>
+                    <td >Playlist Name</td>
+                    <td >You</td>
                     <td>
                         <button
                                 class="btn"
                                 type="button"
                                 th:onclick="'fetchAndToggleDetails(' + ${playlist.playlistId} + ')'"
+                                th:text="#{page.playlist.View.Details}"
                         >
                             View Details
                         </button>
@@ -255,7 +258,7 @@
 
             <!-- Song Details -->
             <div th:each="playlist : ${playlists}" th:id="'details-' + ${playlist.playlistId}" class="song-details-box" style="display: none;">
-                <h3 th:text="'Songs in ' + ${playlist.name}">Playlist Songs</h3>
+                <h3 th:text="'Songs in ' + ${playlist.name} ">Playlist Songs</h3>
                 <ul th:id="'songs-list-' + ${playlist.playlistId}">
                     <li th:each="song : ${playlist.songs}">
                         <span th:text="${song.title}">Song Title</span>
@@ -270,13 +273,13 @@
             </div>
 
             <!-- Other Public Playlists -->
-            <h3>Other Public Playlists</h3>
+            <h3 >Other Public Playlists</h3>
             <table class="table">
                 <thead>
                 <tr>
-                    <th>Playlist Name</th>
-                    <th>Owner</th>
-                    <th>Actions</th>
+                    <th >Playlist Name</th>
+                    <th >Owner</th>
+                    <th >Actions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -288,6 +291,7 @@
                                 class="btn"
                                 type="button"
                                 th:onclick="'fetchAndToggleDetails(' + ${playlist.playlistId} + ')'"
+                                th:text="#{page.playlist.View.Details}"
                         >
                             View Details
                         </button>
