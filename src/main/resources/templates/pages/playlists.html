@@ -181,7 +181,7 @@
 
             <!-- Display Search Results (after search) -->
             <div class="mb-6 p-5 border-2 rounded-lg shadow">
-                <h2 >Search Results</h2>
+                <h2 th:text="#{page.playlist.Search.Results}" >Search Results</h2>
                 <ul class="song-list">
                     <li th:each="song : ${searchResults}">
                         <div class="song-item">
@@ -226,21 +226,21 @@
 
         <!-- Public Playlists -->
         <div class="mb-6 p-5 border-2 rounded-lg shadow">
-            <h2>Public Playlists</h2>
+            <h2 th:text="#{page.playlist.Public.Results}" >Public Playlists</h2>
 
             <!-- User's Public Playlists -->
-            <h3>Your Public Playlists</h3>
+            <h3 th:text="#{page.playlist.Your.Public.Results}" >Your Public Playlists</h3>
             <table class="table">
                 <thead>
                 <tr>
-                    <th >Playlist Name</th>
-                    <th >Owner</th>
-                    <th >Actions</th>
+                    <th th:text="#{playlist.name}" >Playlist Name</th>
+                    <th th:text="#{page.playlist.Owner}" >Owner</th>
+                    <th th:text="#{page.playlist.Actions}" >Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="playlist : ${userPublicPlaylists}">
-                    <td >Playlist Name</td>
+                    <td th:text="#{playlist.name}" >Playlist Name</td>
                     <td >You</td>
                     <td>
                         <button
@@ -273,13 +273,13 @@
             </div>
 
             <!-- Other Public Playlists -->
-            <h3 >Other Public Playlists</h3>
+            <h3 th:text="#{page.playlist.Other.Public.Playlist}" >Other Public Playlists</h3>
             <table class="table">
                 <thead>
                 <tr>
-                    <th >Playlist Name</th>
-                    <th >Owner</th>
-                    <th >Actions</th>
+                    <th th:text="#{playlist.name}" >Playlist Name</th>
+                    <th th:text="#{page.playlist.Owner}" >Owner</th>
+                    <th th:text="#{page.playlist.Actions}" >Actions</th>
                 </tr>
                 </thead>
                 <tbody>
