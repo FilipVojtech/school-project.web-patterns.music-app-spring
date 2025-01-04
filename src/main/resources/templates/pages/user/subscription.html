@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html th:lang="${#locale.language}">
+<div th:replace="~{ fragments/structure :: head (#{page.user.subscription.title}, false) }"></div>
+<body>
+<div th:replace="~{ fragments/structure :: header }"></div>
+<h1 class="text-center text-3xl font-bold mb-3" th:text="#{page.user.subscription.title}"></h1>
+<div class="flex flex-col sm:flex-row justify-center">
+    <div th:replace="~{ fragments/me :: userNav }"></div>
+    <div class="flex flex-col px-2 md:px-0 gap-10 w-full md:w-1/2 lg:w-1/3">
+        <form class="flex flex-col gap-2" action="/me/displayName" method="post">
+
+            <div class="labelled-field">
+                <div th:replace="~{ fragments/form :: formErrors }"></div>
+                <input class="save-button" type="submit" th:value="#{form.renewSubscription}">
+            </div>
+        </form>
+    </div>
+    <div th:replace="~{ fragments/me :: spacer }"></div>
+</div>
+</body>
+</html>
