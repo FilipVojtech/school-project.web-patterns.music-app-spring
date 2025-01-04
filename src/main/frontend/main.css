@@ -57,3 +57,14 @@ input[type=number].no-spinner {
 }
 
 /*endregion*/
+
+/*** region User Sidebar ***/
+.sidebar-item {
+    @apply border-2 border-transparent font-semibold rounded py-2 px-4 hover:bg-primary-200;
+}
+
+.sidebar-item.active {
+    @apply border-primary;
+}
+
+/*endregion*/
