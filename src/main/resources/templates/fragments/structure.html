@@ -15,6 +15,7 @@
 <body>
 <header id="header" th:fragment="header" class="bg-gray-800 flex items-start sm:items-center p-2 gap-2">
     <a class="pt-1 sm:pt-0" th:href="@{/}"><img class="h-8" src="/Logo-small.png" alt=""></a>
+    <noscript class="text-red-600 border-2 border-red-600 bg-white p-2 m-auto font-bold">Please enable JavaScript to use this website.</noscript>
     <nav id="nav" class="flex flex-1">
         <div id="nav-content" class="max-h-dvh overflow-y-auto">
             <a class="nav-button" th:href="@{/}" th:text="#{navbar.home}"></a>
@@ -29,11 +30,10 @@
             <div th:fragment="languageSelect" class="contents sm:flex sm:ms-auto gap-2">
                 <a
                     class="nav-button"
-                    th:href="@{/me}"
+                    th:href="@{/me/account}"
                     th:if="${session.user != null}"
                     th:text="${session.user.displayName}"
                 ></a>
-                <a th:if="${session.user != null}" class="nav-button" th:href="@{/auth/logout}" th:text="#{navbar.logout}"></a>
                 <!--/*<div class="nav-button" th:text="${#locale.toLanguageTag()}"></div>*/-->
                 <form th:action="@{/changeLanguage}" class="contents">
                     <select

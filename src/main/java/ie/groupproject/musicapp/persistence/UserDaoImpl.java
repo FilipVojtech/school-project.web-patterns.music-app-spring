@@ -7,6 +7,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -42,9 +43,11 @@ public class UserDaoImpl extends MySQLDao implements UserDao {
             if (result.next()) {
                 return new User(
                         result.getInt("id"),
+                        result.getString("display_name"),
                         result.getString("email"),
                         result.getString("password"),
-                        result.getString("display_name")
+                        result.getDate("sub_since").toLocalDate(),
+                        result.getDate("sub_end").toLocalDate()
                 );
             } else {
                 throw new RecordNotFound(MessageFormat.format("Couldn''t find user by that ID ({0})", id));
@@ -69,9 +72,11 @@ public class UserDaoImpl extends MySQLDao implements UserDao {
             if (result.next()) {
                 User user = new User(
                         result.getInt("id"),
+                        result.getString("display_name"),
                         result.getString("email"),
                         result.getString("password"),
-                        result.getString("display_name")
+                        result.getDate("sub_since").toLocalDate(),
+                        result.getDate("sub_end").toLocalDate()
                 );
                 return user;
             } else {
@@ -110,14 +115,19 @@ public class UserDaoImpl extends MySQLDao implements UserDao {
 
     @Override
     public boolean updateUser(@NonNull User newUserData) {
-        final var sql = "UPDATE users SET display_name = ?, email = ?, password = ? WHERE id = ?";
+        if (newUserData.getId() == 0) {
+            System.out.println("Cannot update user. ID is not set.");
+        }
+        final var sql = "UPDATE users SET display_name = ?, email = ?, password = ?, sub_since = ?, sub_end = ? WHERE id = ?";
 
         try (Connection con = super.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, newUserData.getDisplayName());
             ps.setString(2, newUserData.getEmail());
             ps.setString(3, newUserData.getPassword());
-            ps.setInt(4, newUserData.getId());
+            ps.setDate(4, Date.valueOf(newUserData.getSubscriptionSince()));
+            ps.setDate(5, Date.valueOf(newUserData.getSubscriptionEnd()));
+            ps.setInt(6, newUserData.getId());
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -125,28 +135,4 @@ public class UserDaoImpl extends MySQLDao implements UserDao {
         }
         return false;
     }
-
-//    @Override
-//    public boolean updateUser(@NonNull User newUserData) {
-//        if (newUserData.getId() == 0) {
-//            System.out.println("Cannot update user. ID is not set.");
-//        }
-//        final var sql = "UPDATE users SET display_name = ?, email = ? WHERE id = ?;";
-//
-//        // todo: Check that new email address is unique
-//        //     Allows the user to change their email address to someone else's
-//
-//        try (Connection con = super.getConnection();
-//             PreparedStatement statement = con.prepareStatement(sql)) {
-//            statement.setString(1, newUserData.getDisplayName());
-//            statement.setString(2, newUserData.getEmail());
-//            statement.setInt(3, newUserData.getId());
-//
-//            return statement.executeUpdate() > 0;
-//
-//        } catch (SQLException e) {
-//            System.out.println("Couldn't update user");
-//        }
-//        return false;
-//    }
 }

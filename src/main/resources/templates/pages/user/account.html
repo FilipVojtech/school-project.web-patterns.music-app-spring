@@ -3,10 +3,11 @@
 <div th:replace="~{ fragments/structure :: head (${session.user.displayName}, true) }"></div>
 <body>
 <div th:replace="~{ fragments/structure :: header }"></div>
-<div id="content" class="md:w-1/2 lg:w-1/3 px-5 md:px-0 w-full mx-auto">
-    <h1 class="text-center text-3xl font-bold mb-3" th:text="#{page.me.title(${session.user.displayName})}"></h1>
+<h1 class="text-center text-3xl font-bold mb-3" th:text="#{page.user.account.title(${session.user.displayName})}"></h1>
 
-    <div class="flex flex-col gap-10">
+<div class="flex flex-col sm:flex-row justify-center">
+    <div th:replace="~{ fragments/me :: userNav }"></div>
+    <div class="flex flex-col px-2 md:px-0 gap-10 w-full md:w-1/2 lg:w-1/3">
         <form class="flex flex-col gap-2" action="/me/displayName" method="post">
             <h2 class="text-xl" th:text="#{form.displayName}"></h2>
             <div class="labelled-field">
@@ -31,7 +32,14 @@
             <h2 class="text-xl" th:text="#{form.email}"></h2>
             <div class="labelled-field">
                 <label for="email" th:text="#{form.email}"></label>
-                <input class="field" type="email" name="email" id="email" th:value="${form.getValue('email')}" required>
+                <input
+                    class="field"
+                    type="email"
+                    name="email"
+                    id="email"
+                    th:value="${form.getValue('email')}"
+                    required
+                >
                 <div th:replace="~{ fragments/form :: errorFor('email') }"></div>
             </div>
             <div class="labelled-field">
@@ -63,6 +71,7 @@
             </div>
         </form>
     </div>
+    <div th:replace="~{ fragments/me :: spacer }"></div>
 </div>
 </body>
 </html>
