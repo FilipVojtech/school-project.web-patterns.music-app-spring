@@ -31,6 +31,11 @@ public class UserController {
         this.userDao = new UserDaoImpl("database.properties");
     }
 
+    @GetMapping("/me")
+    public String redirectToAccount() {
+        return "redirect:/me/account";
+    }
+
     @GetMapping("/me/account")
     public String userPage(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
