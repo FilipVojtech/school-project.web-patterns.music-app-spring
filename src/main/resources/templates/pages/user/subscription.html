@@ -47,7 +47,7 @@
                             th:each="i : ${ #numbers.sequence(1, 12) }"
                             th:value="${ i }"
                             th:text="${ #dates.format(#dates.create(2024, i, 1), 'MMMM') }"
-                            th:selected="${ #dates.createNow().month + 1 == i }"
+                            th:selected="${ form.getValue('cardMonth') == i.toString() }"
                         ></option>
                     </select>
                     <div th:replace="~{ fragments/form :: errorFor('cardMonth') }"></div>
@@ -59,14 +59,14 @@
                         name="cardYear"
                         id="cardYear"
                         required
-                        th:value="${form.hasValue('cardYear') ? form.getValue('cardYear') : ''}"
+                        th:with="currentYear = ${form.hasValue('cardYear') ? form.getValue('cardYear') : ''}"
                     >
-                        <!--/*onchange="setMonthAvailability()"*/-->
                         <option
                             th:each="i : ${ #numbers.sequence(#dates.createNow().year + 7, #dates.createNow().year) }"
-                            th:value="${ i + 1900 }"
-                            th:text="${ i + 1900 }"
-                            th:selected="${ #dates.createNow().year == i }"
+                            th:with="year = ${ i + 1900 }"
+                            th:value="${ year }"
+                            th:text="${ year }"
+                            th:selected="${ currentYear == #numbers.formatInteger(year, 1) }"
                         ></option>
                     </select>
                     <div th:replace="~{ fragments/form :: errorFor('cardYear') }"></div>
