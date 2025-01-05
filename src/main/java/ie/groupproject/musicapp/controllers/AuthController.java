@@ -191,7 +191,7 @@ public class AuthController {
         }
 
         String hashedPw = BCrypt.hashpw(password, BCrypt.gensalt(14));
-        User newUser = new User(email, hashedPw, displayName, LocalDate.now(), LocalDate.now().until(LocalDate.now().plusMonths(12)).getDays());
+        User newUser = new User(email, hashedPw, displayName, LocalDate.now(), LocalDate.now().plusMonths(12));
 
         userDao.createUser(newUser);
         log.info("Created a new user '{}'", newUser.getEmail());

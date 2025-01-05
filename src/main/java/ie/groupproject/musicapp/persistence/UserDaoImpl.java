@@ -7,6 +7,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -46,7 +47,7 @@ public class UserDaoImpl extends MySQLDao implements UserDao {
                         result.getString("email"),
                         result.getString("password"),
                         result.getDate("sub_since").toLocalDate(),
-                        result.getInt("sub_for_days")
+                        result.getDate("sub_end").toLocalDate()
                 );
             } else {
                 throw new RecordNotFound(MessageFormat.format("Couldn''t find user by that ID ({0})", id));
@@ -75,7 +76,7 @@ public class UserDaoImpl extends MySQLDao implements UserDao {
                         result.getString("email"),
                         result.getString("password"),
                         result.getDate("sub_since").toLocalDate(),
-                        result.getInt("sub_for_days")
+                        result.getDate("sub_end").toLocalDate()
                 );
                 return user;
             } else {
@@ -117,14 +118,16 @@ public class UserDaoImpl extends MySQLDao implements UserDao {
         if (newUserData.getId() == 0) {
             System.out.println("Cannot update user. ID is not set.");
         }
-        final var sql = "UPDATE users SET display_name = ?, email = ?, password = ? WHERE id = ?";
+        final var sql = "UPDATE users SET display_name = ?, email = ?, password = ?, sub_since = ?, sub_end = ? WHERE id = ?";
 
         try (Connection con = super.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, newUserData.getDisplayName());
             ps.setString(2, newUserData.getEmail());
             ps.setString(3, newUserData.getPassword());
-            ps.setInt(4, newUserData.getId());
+            ps.setDate(4, Date.valueOf(newUserData.getSubscriptionSince()));
+            ps.setDate(5, Date.valueOf(newUserData.getSubscriptionEnd()));
+            ps.setInt(6, newUserData.getId());
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {

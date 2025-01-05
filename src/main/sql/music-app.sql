@@ -3,12 +3,12 @@ CREATE DATABASE IF NOT EXISTS music_app;
 USE music_app;
 
 CREATE TABLE users (
-                          id INT AUTO_INCREMENT PRIMARY KEY,
-                          email VARCHAR(255) NOT NULL,
-                          password VARCHAR(60) NOT NULL,
-                          display_name VARCHAR(60),
-                          sub_since DATE,
-                          sub_for_days INT DEFAULT 0 CHECK ( sub_for_days >= 0 )  -- Subscription days must be positive
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        email VARCHAR(255) NOT NULL,
+                        password VARCHAR(60) NOT NULL,
+                        display_name VARCHAR(60),
+                        sub_since DATE,
+                        sub_end DATE CHECK ( sub_end > sub_since )  -- Check that the subscription doesn't end before it started
 );
 
 CREATE TABLE artist (

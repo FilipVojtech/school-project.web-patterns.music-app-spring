@@ -18,41 +18,27 @@ public class User {
     @EqualsAndHashCode.Exclude
     private String password;
     private LocalDate subscriptionSince;
-    private int subscriptionForDays;
+    private LocalDate subscriptionEnd;
 
-    public User(@NonNull String email, String password, @NonNull String displayName, LocalDate subscriptionSince, int subscriptionForDays) {
+    public User(@NonNull String email, String password, @NonNull String displayName, LocalDate subscriptionSince, LocalDate subscriptionEnd) {
         this.email = email;
         this.password = password;
         this.displayName = displayName;
         this.subscriptionSince = subscriptionSince;
-        this.subscriptionForDays = subscriptionForDays;
+        this.subscriptionEnd = subscriptionEnd;
     }
 
     /**
      * Copy constructor
      */
     public User(User original) {
-        this(original.getId(), original.getEmail(), original.getPassword(), original.getDisplayName(), original.getSubscriptionSince(), original.getSubscriptionForDays());
+        this(original.getId(), original.getEmail(), original.getPassword(), original.getDisplayName(), original.getSubscriptionSince(), original.getSubscriptionEnd());
     }
 
     /**
      * Extends the user subscription by one year.
      */
     public void extendSubscription() {
-        if (subscriptionSince == null) subscriptionSince = LocalDate.now();
-
-        var currentEndDate = getSubscriptionEnd();
-
-        subscriptionForDays = currentEndDate.until(currentEndDate.plusMonths(12)).getDays();
-    }
-
-    /**
-     * Calculates the subscription end date.
-     * @return Subscription end date.
-     */
-    public LocalDate getSubscriptionEnd() {
-        if (subscriptionSince == null) return null;
-
-        return subscriptionSince.plusDays(subscriptionForDays);
+        subscriptionEnd = subscriptionEnd.plusMonths(12);
     }
 }
