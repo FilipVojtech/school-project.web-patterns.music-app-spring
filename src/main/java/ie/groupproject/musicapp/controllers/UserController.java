@@ -1,6 +1,8 @@
 package ie.groupproject.musicapp.controllers;
 
+import ie.groupproject.musicapp.business.CreditCard;
 import ie.groupproject.musicapp.business.User;
+import ie.groupproject.musicapp.business.exceptions.InvalidCardNumberException;
 import ie.groupproject.musicapp.persistence.UserDao;
 import ie.groupproject.musicapp.persistence.UserDaoImpl;
 import ie.groupproject.musicapp.ui.Form;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.Locale;
 
 @Controller
@@ -179,5 +183,69 @@ public class UserController {
         //endregion
 
         return "redirect:/me";
+    }
+
+    @PostMapping("/me/renewSubscription")
+    public String renewSubscription(
+            HttpSession session,
+            Locale locale,
+            @RequestParam(name = "cardName") String cardName,
+            @RequestParam(name = "cardNumber") String cardNumber,
+            @RequestParam(name = "cardMonth") int cardMonth,
+            @RequestParam(name = "cardYear") int cardYear,
+            @RequestParam(name = "cardSecCode") String cardSecCode,
+            RedirectAttributes redirectAttributes
+    ) {
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) return "redirect:/login";
+
+        Form form = new Form();
+        redirectAttributes.addFlashAttribute("form", form);
+        var cardNameField = form.addField("cardName", cardName);
+        var cardNumberField = form.addField("cardNumber", cardNumber);
+        var cardMonthField = form.addField("cardMonth", String.valueOf(cardMonth));
+        var cardYearField = form.addField("cardYear", String.valueOf(cardYear));
+        var cardSecCodeField = form.addField("cardSecCode", String.valueOf(cardSecCode));
+
+        //region Card Validation
+        BigInteger cardNum;
+        CreditCard card;
+
+        try {
+            cardNumber = cardNumber.replaceAll("\\D", "");
+            cardNum = new BigInteger(cardNumber);
+
+            try {
+                LocalDate expiration = LocalDate.of(
+                        cardYear,
+                        cardMonth,
+                        LocalDate.of(cardYear, cardMonth, 1).lengthOfMonth()
+                );
+
+                card = new CreditCard(cardNum, expiration, cardSecCode, cardName);
+
+                if (card.isExpired())
+                    form.addError(messageSource.getMessage("form.errors.cardAlreadyExpired", null, locale));
+            } catch (IllegalArgumentException e) {
+                form.addError(messageSource.getMessage("form.errors.cardRecheck", null, locale));
+            } catch (InvalidCardNumberException e) {
+                cardNumberField.addError(messageSource.getMessage("form.errors.cardInvalidNumber", null, locale));
+            }
+            // Card is valid
+        } catch (NumberFormatException e) {
+            cardNumberField.addError(messageSource.getMessage("form.errors.cardFormat", null, locale));
+        }
+        //endregion
+
+        form.addError("DEBUG Error");
+
+        if (form.isValid()) {
+            user.extendSubscription();
+            userDao.updateUser(user);
+            session.setAttribute("user", user);
+        }
+
+        return "redirect:/me/subscription";
     }
 }
