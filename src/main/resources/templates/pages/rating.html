@@ -88,29 +88,29 @@
 <main>
     <section class="container">
 
-        <h1>Rate Songs</h1>
+        <h1 th:text="#{page.rating.Rate.Songs}">Rate Songs</h1>
 
         <!-- Search and Rate Songs -->
         <div class="mb-6 p-5 border-2 rounded-lg shadow">
-            <h2>Search for a Song</h2>
+            <h2 th:text="#{page.rating.Search.Songs}">Search for a Song</h2>
             <form action="/searchSongs" method="get" class="search-form">
-                <input type="text" name="query" placeholder="Search songs by name" required>
-                <button type="submit" class="btn">Search</button>
+                <input th:text="#{page.rating.Song.By.Name}" type="text" name="query" placeholder="Search songs by name" required>
+                <button type="submit" class="btn" th:text="#{page.rating.Search}">Search</button>
             </form>
         </div>
         <!-- Display Search Results (after search) -->
         <div class="mb-6 p-5 border-2 rounded-lg shadow" th:if="${searchResults != null}">
-            <h2>Search Results</h2>
+            <h2 th:text="#{page.rating.Search.Results}">Search Results</h2>
             <ul class="song-list">
                 <li th:each="song : ${searchResults}">
                     <div class="song-item">
-                        <h3 th:text="${song.title}">Song Name</h3>
-                        <p>Artist's ID: <span th:text="${song.artist_id}">Artist Name</span></p>
+                        <h3 th:text="${song.title}" + >Song Name</h3>
+                        <p th:text="#{page.rating.Artists.Id}" >Artist's ID: <span th:text="${song.artist_id}">Artist Name</span></p>
 
                         <!-- Rating Form -->
                         <form action="/rate" method="post" class="rating-form">
                             <input type="hidden" name="songId" th:value="${song.id}">
-                            <label for="songRating">Rate This Song</label>
+                            <label for="songRating" th:text="#{page.rating.Rate.This.Song}">Rate This Song</label>
                             <select id="songRating" name="rating" required>
                                 <option value="1" th:selected="${song.rating == 1}">1</option>
                                 <option value="2" th:selected="${song.rating == 2}">2</option>
@@ -118,7 +118,7 @@
                                 <option value="4" th:selected="${song.rating == 4}">4</option>
                                 <option value="5" th:selected="${song.rating == 5}">5</option>
                             </select>
-                            <button type="submit" class="btn btn-small">Submit Rating</button>
+                            <button type="submit" class="btn btn-small" th:text="#{page.rating.Submit.Rating}">Submit Rating</button>
                         </form>
                     </div>
                 </li>
@@ -127,11 +127,11 @@
 
         <!-- User Ratings -->
         <div class="mb-6 p-5 border-2 rounded-lg shadow" th:if="${userRatings != null}">
-            <h2>Your Ratings</h2>
+            <h2 th:text="#{page.rating.Your.Ratings}">Your Ratings</h2>
             <table class="table">
                 <thead>
                 <tr>
-                    <th>Song</th>
+                    <th th:text="#{page.rating.Song }">Song</th>
                     <th>Your Rating</th>
                 </tr>
                 </thead>
@@ -146,21 +146,21 @@
 
         <!-- Highlights -->
         <div class="mb-6 p-5 border-2 rounded-lg shadow">
-            <h2>Highlights</h2>
+            <h2 th:text="#{page.rating.Highlights}">Highlights</h2>
 
             <!-- Top Rated Song -->
             <div th:if="${topRatedSong != null}">
-                <h3>Top Rated Song</h3>
-                <p>Title: <span th:text="${topRatedSong.title}">Top Rated Song</span></p>
-                <p>Artist ID: <span th:text="${topRatedSong.artist_id}">Artist</span></p>
+                <h3 th:text="#{page.rating.Top.Rated.Song}">Top Rated Song</h3>
+                <p th:text="#{page.rating.Title}">Title: <span th:text="${topRatedSong.title}">Top Rated Song</span></p>
+                <p th:text="#{page.rating.Artists.Id}">Artist ID: <span th:text="${topRatedSong.artist_id}">Artist</span></p>
             </div>
 
             <!-- Most Popular Song -->
-                <h2>Most Popular Song</h2>
+                <h2 th:text="#{page.rating.Most.Popular.Song}">Most Popular Song</h2>
                 <div th:if="${mostPopularSong != null}">
-                    <p><strong>Title:</strong> <span th:text="${mostPopularSong.title}">Song Title</span></p>
-                    <p><strong>Artist ID:</strong> <span th:text="${mostPopularSong.artist_id}">Artist ID</span></p>
-                    <p><strong>Playlist Count:</strong> <span th:text="${mostPopularSong.playlistCount != null ? mostPopularSong.playlistCount : 'N/A'}">N/A</span></p>
+                    <p th:text="#{page.rating.Title}" ><strong>Title:</strong> <span th:text="${mostPopularSong.title}">Song Title</span></p>
+                    <p th:text="#{page.rating.Artists.Id}" ><strong>Artist ID:</strong> <span th:text="${mostPopularSong.artist_id}">Artist ID</span></p>
+                    <p th:text="#{page.rating.Playlist.Count}" ><strong>Playlist Count:</strong> <span th:text="${mostPopularSong.playlistCount != null ? mostPopularSong.playlistCount : 'N/A'}">N/A</span></p>
                 </div>
                 <div th:if="${mostPopularSong == null}">
                     <p>No most popular song available.</p>
