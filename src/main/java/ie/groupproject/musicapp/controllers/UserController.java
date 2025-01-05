@@ -40,7 +40,7 @@ public class UserController {
     public String userPage(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
 
-        if (user == null) return "redirect:/";
+        if (user == null) return "redirect:/login";
 
         model.addAttribute("page", "/me/account");
 
