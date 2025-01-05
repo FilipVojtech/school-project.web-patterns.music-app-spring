@@ -2,6 +2,58 @@
 @tailwind components;
 @tailwind utilities;
 
-.nav-button {
-    @apply bg-gray-700 text-white p-2 rounded
+body {
+    @apply min-h-dvh;
 }
+
+/*** region Navbar ***/
+.nav-button {
+    @apply bg-gray-700 text-white p-2 rounded select-none text-nowrap;
+}
+
+#header {
+    @apply sticky top-0 z-30;
+}
+
+#nav-content {
+    @apply hidden sm:flex flex-1 gap-2 pr-0 items-center;
+}
+
+@media screen and (max-width: 640px) {
+    #nav-content.open {
+        @apply !flex flex-col;
+    }
+
+    #nav-content.open .nav-button {
+        @apply w-full;
+    }
+}
+
+/*endregion*/
+
+/*** region Forms ***/
+
+/*Remove arrows from number input*/
+input[type=number].no-spinner::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number].no-spinner {
+    -moz-appearance: textfield;
+}
+
+/* Form styling */
+.save-button {
+    @apply bg-primary text-white p-2 cursor-pointer;
+}
+
+.labelled-field {
+    @apply flex flex-col;
+}
+
+.field {
+    @apply border-t-0 border-x-0 border-2 hover:bg-gray-100 focus:bg-gray-100;
+}
+
+/*endregion*/

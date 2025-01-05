@@ -55,9 +55,6 @@ public class CreditCard {
     private @NonNull String nameOnCard;
 
     public CreditCard(@NonNull BigInteger cardNumber, @NonNull LocalDate expiration, @NonNull String cvv, @NonNull String nameOnCard) throws UnsupportedCardIssuerException, InvalidCardNumberException {
-        if (LocalDate.now().isAfter(expiration)) {
-            throw new IllegalArgumentException("Card is already expired");
-        }
         validateCardNumber(cardNumber);
 
         this.cardNumber = cardNumber;
@@ -73,6 +70,10 @@ public class CreditCard {
         }
 
         this.expiration = expiration;
+    }
+
+    public boolean isExpired() {
+        return expiration.isBefore(LocalDate.now());
     }
 
     private boolean validateCardNumber(BigInteger cardNumber) throws InvalidCardNumberException {

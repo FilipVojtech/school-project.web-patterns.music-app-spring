@@ -36,11 +36,11 @@ public interface UserDao extends AutoCloseable {
      */
     boolean createUser(@NonNull User user) throws EmailAddressAlreadyUsed;
 
-//    /**
-//     * Updates the user
-//     *
-//     * @param newUserData Data to update the user
-//     * @return True if update succeeded. False otherwise.
-//     */
-//    boolean updateUser(@NonNull User newUserData);
+    /**
+     * Updates the user based on ID.
+     *
+     * @param newUserData Data to update the user
+     * @return True if update succeeded. False otherwise.
+     */
+    boolean updateUser(@NonNull User newUserData);
 }

@@ -1,3 +1,5 @@
+USE music_app;
+
 INSERT INTO artist (name) VALUES
                               ('The Beatles'),
                               ('Led Zeppelin'),
@@ -21,7 +23,7 @@ INSERT INTO song (artist_id, title, rating) VALUES
                                                 (4, 'Bohemian Rhapsody', 5),
                                                 (5, 'Gimme Shelter', 5);
 
-INSERT INTO app_user (email, password, display_name) VALUES
+INSERT INTO users (email, password, display_name) VALUES
                                                          # All passwords are "Password"
                                                          ('user1@example.com', '$2a$14$Sci/QKCO4xEAqh2O3/PSk.XGWdEF.Jxy/AB0cDCkGWu19Gz1d3gPq', 'User One'),
                                                          ('user2@example.com', '$2a$14$IUvGQl20ZUAZ78zB./nYVODp9yrq9UtMkCvkx7kh0kBCpU1bg9vo2', 'User Two'),
@@ -44,7 +46,7 @@ INSERT INTO album_songs (album_id, song_id) VALUES
                                                 (5, 7);
 
 INSERT INTO playlist (name, owner_id, visibility, rating) VALUES
-                                                        ('Playlist 1',1, 1, 5),
+                                                        ('Playlist 1', 1, 1, 5),
                                                         ('Playlist 2',2, 0, 4),
                                                         ('Playlist 3',3, 1, 3);
 

@@ -46,6 +46,7 @@ public class PlaylistDaoImpl extends MySQLDao implements PlaylistDao {
         return rowsAffected > 0;
     }
 
+
     @Override
     public boolean updatePlaylist(Playlist playlist) {
         String sql = "UPDATE playlist SET name = ?, visibility = ? WHERE id = ?";
@@ -98,11 +99,12 @@ public class PlaylistDaoImpl extends MySQLDao implements PlaylistDao {
             rowsAffected = ps.executeUpdate();
 
         } catch (SQLException e) {
-            System.out.println("Error removing song from playlist: " + e.getMessage());
+            System.err.println("Error removing song from playlist: " + e.getMessage());
         }
 
-        return rowsAffected > 0;
+        return rowsAffected > 0; // Return true if a row was deleted
     }
+
 
     @Override
     public Playlist getPlaylistById(int playlistId) {
@@ -190,6 +192,25 @@ public class PlaylistDaoImpl extends MySQLDao implements PlaylistDao {
 
         return songs;
     }
+
+    @Override
+    public boolean renamePlaylist(int playlistId, String newName) {
+        String sql = "UPDATE playlist SET name = ? WHERE id = ?";
+        int rowsAffected = 0;
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newName);
+            ps.setInt(2, playlistId);
+
+            rowsAffected = ps.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error renaming playlist: " + e.getMessage());
+        }
+
+        return rowsAffected > 0;
+    }
+
 
     private Playlist mapPlaylist(ResultSet rs) throws SQLException {
         return Playlist.builder()

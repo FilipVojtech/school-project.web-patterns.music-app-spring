@@ -64,6 +64,8 @@ public interface PlaylistDao {
      */
     Playlist getPlaylistById(int playlistId);
 
+    boolean renamePlaylist(int playlistId, String newName);
+
     /**
      * Retrieves all playlists belonging to a user.
      *

@@ -3,18 +3,62 @@
 
 <head th:fragment="head (pageTitle, formStyle)">
     <meta charset="UTF-8">
-    <title th:text="${pageTitle}">Hello</title>
+    <meta
+        name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    >
+    <title th:text="${pageTitle}">Evil Spotify</title>
     <link rel="stylesheet" href="/styles/main.css">
     <link th:if="${formStyle}" rel="stylesheet" href="/styles/forms.css">
 </head>
 
 <body>
-<header th:fragment="header">
-    <nav class="bg-gray-800 flex flex-row gap-2 p-2">
-        <div class="nav-button"><a th:href="@{/}">Home</a></div>
-        <div class="nav-button"><a th:href="@{/playlists}">Playlists</a></div>
-        <div class="nav-button"><a th:href="@{/logout}">Logout</a></div>
+<header id="header" th:fragment="header" class="bg-gray-800 flex items-start sm:items-center p-2 gap-2">
+    <a class="pt-1 sm:pt-0" th:href="@{/}"><img class="h-8" src="/Logo-small.png" alt=""></a>
+    <nav id="nav" class="flex flex-1">
+        <div id="nav-content" class="max-h-dvh overflow-y-auto">
+            <a class="nav-button" th:href="@{/}" th:text="#{navbar.home}"></a>
+            <div th:if="${session.user != null}" th:remove="tag">
+                <a class="nav-button" th:href="@{/playlists}" th:text="#{navbar.playlists}"></a>
+                <a class="nav-button" th:href="@{/rating}" th:text="#{navbar.rating}"></a>
+            </div>
+            <div th:if="${session.user == null}" th:remove="tag">
+                <a class="nav-button" th:href="@{/login}" th:text="#{navbar.login}"></a>
+                <a class="nav-button" th:href="@{/register}" th:text="#{navbar.register}"></a>
+            </div>
+            <div th:fragment="languageSelect" class="contents sm:flex sm:ms-auto gap-2">
+                <a
+                    class="nav-button"
+                    th:href="@{/me}"
+                    th:if="${session.user != null}"
+                    th:text="${session.user.displayName}"
+                ></a>
+                <a th:if="${session.user != null}" class="nav-button" th:href="@{/auth/logout}" th:text="#{navbar.logout}"></a>
+                <!--/*<div class="nav-button" th:text="${#locale.toLanguageTag()}"></div>*/-->
+                <form th:action="@{/changeLanguage}" class="contents">
+                    <select
+                        name="lang"
+                        id="language"
+                        onchange="this.form.submit()"
+                        class="nav-button pe-10 border-none"
+                        th:with="langTag = ${#locale.toLanguageTag()}"
+                    >
+                        <option th:selected="${langTag == 'en-UK'}" value="en-UK">English</option>
+                        <option th:selected="${langTag == 'pt-PT'}" value="pt-PT">Português</option>
+                    </select>
+                </form>
+            </div>
+        </div>
     </nav>
+    <div class="nav-button sm:hidden" onclick="toggleNav()">
+        <img
+            style="filter: invert()"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLW1lbnUiPjxsaW5lIHgxPSI0IiB4Mj0iMjAiIHkxPSIxMiIgeTI9IjEyIi8+PGxpbmUgeDE9IjQiIHgyPSIyMCIgeTE9IjYiIHkyPSI2Ii8+PGxpbmUgeDE9IjQiIHgyPSIyMCIgeTE9IjE4IiB5Mj0iMTgiLz48L3N2Zz4="
+            alt=""
+            class="cursor-pointer"
+        >
+    </div>
+    <script src="/js/responsive-navbar.js"></script>
 </header>
 </body>
 

@@ -38,8 +38,10 @@ public class MySQLDao implements AutoCloseable {
     public MySQLDao(String propertiesFilename) {
         properties = new Properties();
         try {
+            // Get the path to the specified properties file
+            String rootPath = Thread.currentThread().getContextClassLoader().getResource(propertiesFilename).getPath();
             // Load in all key-value pairs from properties file
-            properties.load(new FileInputStream(propertiesFilename));
+            properties.load(new FileInputStream(rootPath));
         } catch (IOException e) {
             System.out.println("An exception occurred when attempting to load properties from \"" + propertiesFilename + "\": " + e.getMessage());
             e.printStackTrace();
@@ -80,6 +82,7 @@ public class MySQLDao implements AutoCloseable {
 
     /**
      * Closes and frees a database connection
+     *
      * @param con Connection to close
      * @deprecated Use {@systemProperty close()} instead
      */

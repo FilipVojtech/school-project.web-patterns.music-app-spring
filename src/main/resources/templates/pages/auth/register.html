@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html th:lang="${#locale.language}">
+<div th:replace="~{ fragments/structure :: head (#{page.register.registerHeading}, true) }"></div>
+<body>
+<div th:replace="~{ fragments/structure :: header }"></div>
+<div class="flex flex-col items-center justify-center flex-1">
+    <div class="md:w-1/2 lg:w-1/3 px-5 md:px-0 w-full place-self-center">
+        <h3 class="text-center text-3xl font-bold mb-3" th:text="#{page.register.registerHeading}"></h3>
+        <form action="/auth/register" method="post" class="flex flex-col gap-2">
+            <div class="labelled-field">
+                <label for="displayName" th:text="#{form.displayName}"></label>
+                <input
+                    th:class="|field ${form.isValid('displayName') ? '' : 'border-red-500'}|"
+                    type="text"
+                    name="displayName"
+                    id="displayName"
+                    required
+                    th:value="${form.hasValue('displayName') ? form.getValue('displayName') : ''}"
+                >
+                <div th:replace="~{ fragments/form :: errorFor('displayName') }"></div>
+            </div>
+            <div class="labelled-field">
+                <label for="email" th:text="#{form.email}"></label>
+                <input
+                    th:class="|field ${form.isValid('email') ? '' : 'border-red-500'}|"
+                    type="email"
+                    name="email"
+                    id="email"
+                    required
+                    th:value="${form.hasValue('email') ? form.getValue('email') : ''}"
+                >
+                <div th:replace="~{ fragments/form :: errorFor('email') }"></div>
+            </div>
+            <div class="labelled-field">
+                <label for="password" th:text="#{form.password}"></label>
+                <input
+                    th:class="|field ${form.isValid('password') ? '' : 'border-red-500'}|"
+                    type="password"
+                    name="password"
+                    id="password"
+                    required
+                >
+                <div th:replace="~{ fragments/form :: errorFor('password') }"></div>
+            </div>
+            <div class="labelled-field">
+                <label for="passwordCheck" th:text="#{form.passwordRepeat}"></label>
+                <input
+                    th:class="|field ${form.isValid('passwordCheck') ? '' : 'border-red-500'}|"
+                    type="password"
+                    name="passwordCheck"
+                    id="passwordCheck"
+                    required
+                >
+                <div th:replace="~{ fragments/form :: errorFor('passwordCheck') }"></div>
+            </div>
+            <div class="labelled-field mt-10">
+                <label for="cardName" th:utext="#{form.nameOnCard}"></label>
+                <input
+                    th:class="|field ${form.isValid('cardName') ? '' : 'border-red-500'}|"
+                    type="text"
+                    name="cardName"
+                    id="cardName"
+                    required
+                    th:value="${form.hasValue('cardName') ? form.getValue('cardName') : ''}"
+                >
+                <div th:replace="~{ fragments/form :: errorFor('cardName') }"></div>
+            </div>
+            <div class="labelled-field">
+                <label for="cardNumber" th:text="#{form.cardNumber}"></label>
+                <input
+                    th:class="|field ${form.isValid('cardNumber') ? '' : 'border-red-500'}|"
+                    type="text"
+                    name="cardNumber"
+                    id="cardNumber"
+                    pattern="([0-9]{4}[\s\-]?){4}"
+                    required
+                    th:value="${form.hasValue('cardNumber') ? form.getValue('cardNumber') : ''}"
+                >
+                <div th:replace="~{ fragments/form :: errorFor('cardNumber') }"></div>
+            </div>
+            <div class="flex flex-col md:flex-row gap-1">
+                <div class="flex flex-col flex-1">
+                    <label for="cardMonth" th:text="#{form.expirationMonth}"></label>
+                    <select
+                        th:class="|field ${form.isValid('cardMonth') ? '' : 'border-red-500'}|"
+                        name="cardMonth"
+                        id="cardMonth"
+                        required
+                    >
+                        <option
+                            th:each="i : ${ #numbers.sequence(1, 12) }"
+                            th:value="${ i }"
+                            th:text="${ #dates.format(#dates.create(2024, i, 1), 'MMMM') }"
+                            th:selected="${ #dates.createNow().month + 1 == i }"
+                        ></option>
+                    </select>
+                    <div th:replace="~{ fragments/form :: errorFor('cardMonth') }"></div>
+                </div>
+                <div class="flex flex-col flex-1">
+                    <label for="cardYear" th:text="#{form.expirationYear}"></label>
+                    <select
+                        th:class="|field ${form.isValid('cardMonth') ? '' : 'border-red-500'}|"
+                        name="cardYear"
+                        id="cardYear"
+                        required
+                        th:value="${form.hasValue('cardYear') ? form.getValue('cardYear') : ''}"
+                    >
+                        <!--/*onchange="setMonthAvailability()"*/-->
+                        <option
+                            th:each="i : ${ #numbers.sequence(#dates.createNow().year + 7, #dates.createNow().year) }"
+                            th:value="${ i + 1900 }"
+                            th:text="${ i + 1900 }"
+                            th:selected="${ #dates.createNow().year == i }"
+                        ></option>
+                    </select>
+                    <div th:replace="~{ fragments/form :: errorFor('cardYear') }"></div>
+                </div>
+                <div class="flex flex-col flex-1">
+                    <label for="cardSecCode" th:text="#{form.securityCode}"></label>
+                    <input
+                        th:class="|no-spinner field ${form.isValid('cardSecCode') ? '' : 'border-red-500'}|"
+                        type="number"
+                        name="cardSecCode"
+                        id="cardSecCode"
+                        required
+                    >
+                    <div th:replace="~{ fragments/form :: errorFor('cardSecCode') }"></div>
+                </div>
+            </div>
+            <div class="flex items-center">
+                <input
+                    th:class="|me-3 ${form.isValid('gdpr') ? '' : 'border-red-500'}|"
+                    type="checkbox"
+                    name="gdpr"
+                    id="gdpr"
+                >
+                <label class="prose" for="gdpr" th:utext="#{form.gdpr}"></label>
+                <div th:replace="~{ fragments/form :: errorFor('gdpr') }"></div>
+            </div>
+            <div th:replace="~{ fragments/form :: formErrors }"></div>
+            <div class="flex flex-col">
+                <input type="submit" th:value="#{form.register}" class="save-button">
+            </div>
+        </form>
+    </div>
+</div>
+<!--/*
+<script>
+    const currentDate = new Date(Date.now());
+    const currentMonthIndex = currentDate.getMonth() + 1;
+    const currentYear = currentDate.getFullYear();
+    /** @type {HTMLSelectElement} */
+    const yearSelect = document.getElementById("cardYear");
+    /** @type {HTMLSelectElement} */
+    const monthSelect = document.getElementById("cardMonth");
+    let monthEls = monthSelect.children;
+
+    function setMonthAvailability() {
+        const selectedYear = yearSelect.selectedOptions[0];
+        for (const monthEl of monthEls) {
+            if (selectedYear.value === currentYear.toString()
+                && parseInt(monthEl.value) < currentMonthIndex) {
+                monthEl.setAttribute("disabled", "");
+            } else {
+                monthEl.removeAttribute("disabled");
+            }
+        }
+
+
+        const selectedMonth = monthSelect.selectedOptions[0];
+        if (selectedYear.value === currentYear.toString()
+            && parseInt(selectedMonth.value) < currentMonthIndex) {
+            let smth = [ ...monthEls ]
+            smth = smth.filter(value => value.value >= currentMonthIndex);
+            selectedMonth.removeAttribute("selected");
+            smth[0].setAttribute("selected", "");
+        }
+    }
+
+    window.addEventListener("load", setMonthAvailability);
+</script>
+*/-->
+</body>
+</html>

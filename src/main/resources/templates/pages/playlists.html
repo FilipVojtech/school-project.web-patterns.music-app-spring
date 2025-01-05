@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html th:lang="${#locale.language}">
+<!-- Head -->
+<div th:replace="~{fragments/structure :: head (pageTitle = 'Evil Spotify', formStyle = false) }"></div>
+<style>
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        font-family: Arial, sans-serif;
+    }
+
+    h1, h2, h3 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+    }
+
+    .table th, .table td {
+        text-align: left;
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .table th {
+        background-color: #f2f2f2;
+    }
+
+    .table tr:hover {
+        background-color: #e9e9e9;
+    }
+
+    .song-details-box {
+        display: none;
+        margin-top: 10px;
+        padding: 15px;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn {
+        padding: 5px 10px;
+        border: none;
+        background-color: #007bff;
+        color: #fff;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        background-color: #0056b3;
+    }
+
+    .search-results {
+        margin-top: 10px;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+    }
+
+    .search-results ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .search-results li {
+        margin: 5px 0;
+        display: flex;
+        justify-content: space-between;
+    }
+</style>
+<body>
+<!-- Header -->
+<header th:replace="~{fragments/structure :: header}"></header>
+<main>
+    <section class="container">
+        <h2 th:text="#{page.playlist.Playlist}">Playlists</h2>
+
+        <!-- Create Playlist Form -->
+        <div class="mb-6 p-5 border-2 rounded-lg shadow">
+            <h2 th:text="#{page.playlist.Create.New.Playlist}">Create a New Playlist</h2>
+            <form action="/playlists/create" method="post">
+                <div class="form-group">
+                    <label for="playlistName" th:text="#{page.playlist.Playlist.Name}">Playlist Name</label>
+                    <input type="text" id="playlistName" name="name" th:text="#{page.playlist.Enter.Playlist.Name}" placeholder="Enter playlist name" required>
+                </div>
+                <div class="form-group">
+                    <label for="visibility" th:text="#{page.playlist.visibility}">Visibility</label>
+                    <select id="visibility" name="visibility">
+                        <option value="true" th:text="#{page.playlist.Public}">Public</option>
+                        <option value="false" th:text="#{page.playlist.Private}">Private</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn" th:text="#{page.playlist.Create.Playlist}">Create Playlist</button>
+            </form>
+        </div>
+
+        <!-- Display User Playlists -->
+        <div class="mb-6 p-5 border-2 rounded-lg shadow">
+            <h2 th:text="#{page.playlist.Your.Playlist}">Your Playlists</h2>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th th:text="#{page.playlist.Name}">Name</th>
+                    <th th:text="#{page.playlist.Visibility}">Visibility</th>
+                    <th th:text="#{page.playlist.Actions}"> Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="playlist : ${playlists}">
+                    <td>
+                        <span th:text="#{page.playlist.Playlist.Name}" th:id="'playlist-name-' + ${playlist.playlistId}">Playlist Name</span>
+                    </td>
+                    <td th:text="${playlist.isPublic ? 'Public' : 'Private'}" >Visibility</td>
+                    <td>
+                        <button
+                                class="btn"
+                                type="button"
+                                th:onclick="'fetchAndToggleDetails(' + ${playlist.playlistId} + ')'"
+                                th:text="#{page.playlist.View.Details}">
+                            View Details
+                        </button>
+                        <button
+                                class="btn btn-secondary"
+                                type="button"
+                                th:onclick="'toggleRenameForm(' + ${playlist.playlistId} + ')'"
+                                th:text="#{page.playlist.Rename}">
+                            Rename
+                        </button>
+                        <!-- Rename Playlist Form -->
+                        <form
+                                th:action="'/playlists/' + ${playlist.playlistId} + '/rename'"
+                                method="post"
+                                th:id="'rename-form-' + ${playlist.playlistId}"
+                                style="display: none; margin-top: 10px;">
+                            <input
+                                    type="text"
+                                    name="newName"
+                                    placeholder="Enter new playlist name"
+                                    required>
+                            <button type="submit" class="btn btn-success" th:text="#{page.playlist.Save}">Save</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Song Details -->
+            <div th:each="playlist : ${playlists}" th:id="'details-' + ${playlist.playlistId}" class="song-details-box" style="display: none;">
+                <h3 th:text="'Songs in ' + ${playlist.name} ">Playlist Songs</h3>
+                <ul th:id="'songs-list-' + ${playlist.playlistId}">
+                    <!-- Songs will be dynamically loaded here -->
+                </ul>
+            </div>
+        </div>
+
+
+
+
+        <!-- Search Form -->
+            <div class="mb-6 p-5 border-2 rounded-lg shadow">
+                <h2 th:text="#{page.playlist.Search.For.A.Song}">Search for a Song</h2>
+                <form action="/playlists/searchPlaylistSongs" method="get" class="search-form">
+                    <input type="text" name="query" placeholder="Search songs by name" required>
+                    <button type="submit" class="btn" th:text="#{page.playlist.Search}">Search</button>
+                </form>
+            </div>
+
+            <!-- Display Search Results (after search) -->
+            <div class="mb-6 p-5 border-2 rounded-lg shadow">
+                <h2 th:text="#{page.playlist.Search.Results}" >Search Results</h2>
+                <ul class="song-list">
+                    <li th:each="song : ${searchResults}">
+                        <div class="song-item">
+                            <h3 th:text="${song.getTitle()}" >Song Name</h3>
+                            <p >Artist's Id: <span th:text="${song.getArtist_id()} #{page.playlist.Artist.Name}">Artist Name</span></p>
+
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Display Song Information -->
+            <div th:if="${searchResults != null}" class="mb-6 p-5 border-2 rounded-lg shadow">
+                <h3 th:text="${page.playlist.Search.Results}">Search Results</h3>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th th:text="${page.playlist.Title}">Title</th>
+                        <th th:text="${page.playlist.Artists}">Artist</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="song : ${searchResults}">
+                        <td th:text="${song.title}">Song Title</td>
+                        <td th:text="${song.artist}">Artist Name</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+
+        <!-- Search Results -->
+            <div class="search-results" id="searchResults" style="display: none;">
+                <h3>Search Results</h3>
+                <ul id="resultsList">
+                    <!-- Search results will be populated here -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Public Playlists -->
+        <div class="mb-6 p-5 border-2 rounded-lg shadow">
+            <h2 th:text="#{page.playlist.Public.Results}" >Public Playlists</h2>
+
+            <!-- User's Public Playlists -->
+            <h3 th:text="#{page.playlist.Your.Public.Results}" >Your Public Playlists</h3>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th th:text="#{playlist.name}" >Playlist Name</th>
+                    <th th:text="#{page.playlist.Owner}" >Owner</th>
+                    <th th:text="#{page.playlist.Actions}" >Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="playlist : ${userPublicPlaylists}">
+                    <td th:text="#{playlist.name}" >Playlist Name</td>
+                    <td >You</td>
+                    <td>
+                        <button
+                                class="btn"
+                                type="button"
+                                th:onclick="'fetchAndToggleDetails(' + ${playlist.playlistId} + ')'"
+                                th:text="#{page.playlist.View.Details}"
+                        >
+                            View Details
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Song Details -->
+            <div th:each="playlist : ${playlists}" th:id="'details-' + ${playlist.playlistId}" class="song-details-box" style="display: none;">
+                <h3 th:text="'Songs in ' + ${playlist.name} ">Playlist Songs</h3>
+                <ul th:id="'songs-list-' + ${playlist.playlistId}">
+                    <li th:each="song : ${playlist.songs}">
+                        <span th:text="${song.title}">Song Title</span>
+                        <span th:text="' by ' + ${song.artist}">Artist Name</span>
+                        <button
+                                class="btn btn-danger"
+                                th:onclick="'removeSongFromPlaylist(' + ${playlist.playlistId} + ',' + ${song.id} + ')'">
+                            Remove
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Other Public Playlists -->
+            <h3 th:text="#{page.playlist.Other.Public.Playlist}" >Other Public Playlists</h3>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th th:text="#{playlist.name}" >Playlist Name</th>
+                    <th th:text="#{page.playlist.Owner}" >Owner</th>
+                    <th th:text="#{page.playlist.Actions}" >Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="playlist : ${otherPublicPlaylists}">
+                    <td th:text="${playlist.name}">Playlist Name</td>
+                    <td>User <span th:text="${playlist.userId}">ID</span></td>
+                    <td>
+                        <button
+                                class="btn"
+                                type="button"
+                                th:onclick="'fetchAndToggleDetails(' + ${playlist.playlistId} + ')'"
+                                th:text="#{page.playlist.View.Details}"
+                        >
+                            View Details
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Song Details -->
+            <div th:each="playlist : ${otherPublicPlaylists}" th:id="'details-' + ${playlist.playlistId}" class="song-details-box">
+                <h3 th:text="'Songs in ' + ${playlist.name}">Playlist Songs</h3>
+                <ul th:id="'songs-list-' + ${playlist.playlistId}">
+                    <!-- Songs will be dynamically loaded here -->
+                </ul>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- JavaScript -->
+<script>
+    async function fetchAndToggleDetails(playlistId) {
+        const detailsBox = document.getElementById(`details-${playlistId}`);
+        const songsList = document.getElementById(`songs-list-${playlistId}`);
+
+        if (detailsBox.style.display === "none" || !detailsBox.style.display) {
+            try {
+                const response = await fetch(`/playlists/${playlistId}/songs`);
+                const songs = await response.json();
+
+                songsList.innerHTML = ""; // Clear previous songs
+
+                songs.forEach(song => {
+                    const listItem = document.createElement("li");
+                    listItem.innerHTML = `
+                    ${song.title} by ${song.artist}
+                    <button class="btn btn-danger" onclick="removeSongFromPlaylist(${playlistId}, ${song.id})">
+                        Remove
+                    </button>
+                `;
+                    songsList.appendChild(listItem);
+                });
+
+                detailsBox.style.display = "block";
+            } catch (error) {
+                console.error("Error fetching songs:", error);
+            }
+        } else {
+            detailsBox.style.display = "none";
+        }
+    }
+
+    async function removeSongFromPlaylist(playlistId, songId) {
+        try {
+            const response = await fetch(`/playlists/${playlistId}/removeSong?songId=${songId}`, {
+                method: "POST",
+            });
+
+            if (response.ok) {
+                alert("Song removed successfully!");
+                fetchAndToggleDetails(playlistId); // Refresh playlist
+            } else {
+                alert("Failed to remove the song.");
+            }
+        } catch (error) {
+            console.error("Error removing song:", error);
+        }
+    }
+
+    function toggleRenameForm(playlistId) {
+        const form = document.getElementById(`rename-form-${playlistId}`);
+        const isHidden = form.style.display === "none" || !form.style.display;
+
+        form.style.display = isHidden ? "block" : "none";
+    }
+
+
+    async function addSongToPlaylist(songId) {
+        const playlistId = document.getElementById("playlistSelect").value;
+
+        try {
+            const response = await fetch(`/playlists/addSong`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ playlistId, songId })
+            });
+
+            if (response.ok) {
+                alert("Song added successfully!");
+            } else {
+                alert("Failed to add song to playlist.");
+            }
+        } catch (error) {
+            console.error("Error adding song to playlist:", error);
+        }
+    }
+</script>
+</body>
+</html>
