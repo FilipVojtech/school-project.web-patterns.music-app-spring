@@ -27,7 +27,7 @@
                 <a class="nav-button" th:href="@{/login}" th:text="#{navbar.login}"></a>
                 <a class="nav-button" th:href="@{/register}" th:text="#{navbar.register}"></a>
             </div>
-            <div th:fragment="languageSelect" class="contents sm:flex sm:ms-auto gap-2">
+            <div class="contents sm:flex gap-2 flex-1 justify-end">
                 <a
                     class="nav-button"
                     th:href="@{/me/account}"
@@ -35,12 +35,12 @@
                     th:text="${session.user.displayName}"
                 ></a>
                 <!--/*<div class="nav-button" th:text="${#locale.toLanguageTag()}"></div>*/-->
-                <form th:action="@{/changeLanguage}" class="contents">
+                <form th:fragment="languageSelect" th:action="@{/changeLanguage}" class="flex">
                     <select
                         name="lang"
                         id="language"
                         onchange="this.form.submit()"
-                        class="nav-button pe-10 border-none"
+                        class="border-none bg-gray-700 text-white py-2 rounded"
                         th:with="langTag = ${#locale.toLanguageTag()}"
                     >
                         <option th:selected="${langTag == 'en-UK'}" value="en-UK">English</option>
