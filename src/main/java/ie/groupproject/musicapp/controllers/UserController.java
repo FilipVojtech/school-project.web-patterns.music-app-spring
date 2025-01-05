@@ -243,8 +243,6 @@ public class UserController {
         }
         //endregion
 
-        form.addError("DEBUG Error");
-
         if (form.isValid()) {
             user.extendSubscription();
             userDao.updateUser(user);
