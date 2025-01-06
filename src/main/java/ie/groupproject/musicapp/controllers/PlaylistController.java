@@ -161,23 +161,22 @@ public class PlaylistController {
     }
 
 
-//      edited out. cant figure out why search doesnt work since its a copy/paste of search method in RatingController  :(
-//    @GetMapping("/playlists/searchPlaylistSongs")
-//    public String searchPlaylistSongs(@RequestParam String query, Model model, HttpSession session) throws SQLException {
-//        User currentUser = (User) session.getAttribute("user");
-//        if (currentUser == null) {
-//            return "redirect:/login";
-//        }
-//
-//        // Fetch songs matching the keyword
-//        List<Song> searchResults = songDao.searchSongs(query);
-//
-//        // Add data to the model
-//        model.addAttribute("searchResults", searchResults);
-//        model.addAttribute("keyword", query);
-//
-//        return "pages/playlists";
-//    }
+    @GetMapping("/searchPlaylistSongs")
+    public String searchPlaylistSongs(@RequestParam(name = "query") String query, Model model, HttpSession session) throws SQLException {
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        // Fetch songs matching the keyword
+        List<Song> searchResults = songDao.searchSongs(query);
+
+        // Add data to the model
+        model.addAttribute("searchResults", searchResults);
+        model.addAttribute("keyword", query);
+
+        return "pages/playlists";
+    }
 
 
     /**
