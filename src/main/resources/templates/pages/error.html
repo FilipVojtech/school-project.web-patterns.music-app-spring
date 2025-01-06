@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html th:lang="${#locale.language}">
+<div th:replace="~{ fragments/structure :: head ('Error', false) }"></div>
+<body>
+<div th:replace="~{ fragments/structure :: header }"></div>
+<div class="container mx-auto flex flex-col gap-2 px-2">
+    <h1 class="text-3xl" th:text="#{page.error.title}"></h1>
+    <p class="text-2xl" th:text="${errorType}"></p>
+    <p class="text-xl" th:text="${error}"></p>
+
+    <div th:remove="tag" th:if="${code != null}">
+        <p th:text="#{page.error.catPic}">But don't fret, here's a picture of a cat!</p>
+        <img class="sm:max-w-[75%] md:max-w-[50%] mx-auto" th:src="|https://http.cat/${code}|" alt="">
+    </div>
+</div>
+</body>
+</html>

@@ -1,6 +1,8 @@
 package ie.groupproject.musicapp.controllers;
 
+import ie.groupproject.musicapp.util.CreditCard;
 import ie.groupproject.musicapp.business.User;
+import ie.groupproject.musicapp.business.exceptions.InvalidCardNumberException;
 import ie.groupproject.musicapp.persistence.UserDao;
 import ie.groupproject.musicapp.persistence.UserDaoImpl;
 import ie.groupproject.musicapp.ui.Form;
@@ -15,8 +17,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.Locale;
 
+/**
+ * Routes in this controller are all guarded so that if unauthenticated user visits the page, they are redirected to the login page.
+ *
+ * @author Filip Vojtěch
+ */
 @Controller
 public class UserController {
     private final MessageSource messageSource;
@@ -27,11 +36,24 @@ public class UserController {
         this.userDao = new UserDaoImpl("database.properties");
     }
 
+    /**
+     * Redirect to a valid path if only the /me part was supplied
+     */
     @GetMapping("/me")
+    public String redirectToAccount() {
+        return "redirect:/me/account";
+    }
+
+    /**
+     * Account management page
+     */
+    @GetMapping("/me/account")
     public String userPage(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
 
-        if (user == null) return "redirect:/";
+        if (user == null) return "redirect:/login";
+
+        model.addAttribute("page", "/me/account");
 
         Form form = (Form) model.getAttribute("form");
         if (form == null) {
@@ -44,9 +66,41 @@ public class UserController {
             var passwordCheckField = form.addField("passwordCheck", "");
         }
 
-        return "pages/user/me";
+        return "pages/user/account";
     }
 
+    /**
+     * Subscription page
+     */
+    @GetMapping("/me/subscription")
+    public String subscriptionPage(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("page", "/me/subscription");
+        model.addAttribute("subscriptionEndDate", user.getSubscriptionEnd());
+
+        Form form = (Form) model.getAttribute("form");
+        if (form == null) {
+            form = new Form();
+            model.addAttribute("form", form);
+            form.addField("cardName", "");
+            form.addField("cardNumber", "");
+            form.addField("cardMonth", "");
+            form.addField("cardYear", "");
+            form.addField("cardSecCode", "");
+        }
+
+        return "pages/user/subscription";
+    }
+
+    /**
+     * Display name form handler.
+     * Changes the display name only if it differs from the current one
+     */
     @PostMapping("/me/displayName")
     public String updateDisplayName(
             HttpSession session,
@@ -78,6 +132,10 @@ public class UserController {
         return "redirect:/me";
     }
 
+    /**
+     * Email form handler.
+     * Updates the email address only if the new one differs from the old one.
+     */
     @PostMapping("/me/email")
     public String updateEmail(
             HttpSession session,
@@ -109,6 +167,11 @@ public class UserController {
         return "redirect:/me";
     }
 
+    /**
+     * Password change form handler.
+     * Checks that the current password matches, then if the two new passwords match.
+     * Finally checks that the new password is strong enough.
+     */
     @PostMapping("/me/password")
     public String updatePassword(
             HttpSession session,
@@ -152,5 +215,71 @@ public class UserController {
         //endregion
 
         return "redirect:/me";
+    }
+
+    /**
+     * Renew subscription form handler.
+     * Checks the card and if it is valid and extends the subscription by one year.
+     */
+    @PostMapping("/me/renewSubscription")
+    public String renewSubscription(
+            HttpSession session,
+            Locale locale,
+            @RequestParam(name = "cardName") String cardName,
+            @RequestParam(name = "cardNumber") String cardNumber,
+            @RequestParam(name = "cardMonth") int cardMonth,
+            @RequestParam(name = "cardYear") int cardYear,
+            @RequestParam(name = "cardSecCode") String cardSecCode,
+            RedirectAttributes redirectAttributes
+    ) {
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) return "redirect:/login";
+
+        Form form = new Form();
+        redirectAttributes.addFlashAttribute("form", form);
+        var cardNameField = form.addField("cardName", cardName);
+        var cardNumberField = form.addField("cardNumber", cardNumber);
+        var cardMonthField = form.addField("cardMonth", String.valueOf(cardMonth));
+        var cardYearField = form.addField("cardYear", String.valueOf(cardYear));
+        var cardSecCodeField = form.addField("cardSecCode", String.valueOf(cardSecCode));
+
+        //region Card Validation
+        BigInteger cardNum;
+        CreditCard card;
+
+        try {
+            cardNumber = cardNumber.replaceAll("\\D", "");
+            cardNum = new BigInteger(cardNumber);
+
+            try {
+                LocalDate expiration = LocalDate.of(
+                        cardYear,
+                        cardMonth,
+                        LocalDate.of(cardYear, cardMonth, 1).lengthOfMonth()
+                );
+
+                card = new CreditCard(cardNum, expiration, cardSecCode, cardName);
+
+                if (card.isExpired())
+                    form.addError(messageSource.getMessage("form.errors.cardAlreadyExpired", null, locale));
+            } catch (IllegalArgumentException e) {
+                form.addError(messageSource.getMessage("form.errors.cardRecheck", null, locale));
+            } catch (InvalidCardNumberException e) {
+                cardNumberField.addError(messageSource.getMessage("form.errors.cardInvalidNumber", null, locale));
+            }
+            // Card is valid
+        } catch (NumberFormatException e) {
+            cardNumberField.addError(messageSource.getMessage("form.errors.cardFormat", null, locale));
+        }
+        //endregion
+
+        if (form.isValid()) {
+            user.extendSubscription();
+            userDao.updateUser(user);
+            session.setAttribute("user", user);
+        }
+
+        return "redirect:/me/subscription";
     }
 }

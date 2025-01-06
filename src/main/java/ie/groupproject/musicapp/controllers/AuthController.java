@@ -1,6 +1,6 @@
 package ie.groupproject.musicapp.controllers;
 
-import ie.groupproject.musicapp.business.CreditCard;
+import ie.groupproject.musicapp.util.CreditCard;
 import ie.groupproject.musicapp.business.User;
 import ie.groupproject.musicapp.business.exceptions.InvalidCardNumberException;
 import ie.groupproject.musicapp.persistence.UserDao;
@@ -19,19 +19,25 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.view.RedirectView;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 
+/**
+ * @author Filip Vojtěch
+ */
 @Controller
 @Slf4j
 public class AuthController {
     @Autowired
     MessageSource messageSource;
 
+    /**
+     * Login page.
+     * If the user is already logged in, then it redirects them to the home page.
+     */
     @GetMapping("/login")
     public String loginPage(Model model, HttpSession session) {
         if (session.getAttribute("user") != null) return "redirect:/";
@@ -39,6 +45,10 @@ public class AuthController {
         return "pages/auth/login";
     }
 
+    /**
+     * Login form handler.
+     * Checks if the user with the provided email exists. If they do, check the password and log them in saving the user details to the session.
+     */
     @PostMapping("/auth/login")
     public String loginFormHandler(
             HttpSession session,
@@ -55,7 +65,8 @@ public class AuthController {
         redirectAttributes.addFlashAttribute("form", form);
 
         //region Email Validation
-        if (!FormValidation.isEmail(email)) emailField.addError(messageSource.getMessage("form.errors.emailAddressIncorrectFormat", null, locale));
+        if (!FormValidation.isEmail(email))
+            emailField.addError(messageSource.getMessage("form.errors.emailAddressIncorrectFormat", null, locale));
         //endregion
 
         User user;
@@ -67,6 +78,7 @@ public class AuthController {
 
         if (user != null && BCrypt.checkpw(password, user.getPassword())) {
             session.setAttribute("user", user);
+            log.info("User has been logged in {}", user.getEmail());
             return "redirect:/";
         } else {
             form.addError(messageSource.getMessage("form.errors.incorrectEmailOrPassword", null, locale));
@@ -75,6 +87,10 @@ public class AuthController {
 
     }
 
+    /**
+     * Registration page.
+     * If the user is already logged in, it redirects them to the home page.
+     */
     @GetMapping("/register")
     public String registerPage(Model model, HttpSession session) {
         if (session.getAttribute("user") != null) return "redirect:/";
@@ -88,6 +104,11 @@ public class AuthController {
         return "pages/auth/register";
     }
 
+    /**
+     * Registration form handler.
+     * Checks the user details including the card are valid.
+     * If everything is valid, then that new user is created in the database and saved to the session.
+     */
     @PostMapping("/auth/register")
     public String registerFormHandler(
             HttpSession session,
@@ -142,16 +163,15 @@ public class AuthController {
         //endregion
 
         //region Password Validation
-        if (!password.equals(passwordCheck)) {
+        if (!password.equals(passwordCheck))
             passwordCheckField.addError(messageSource.getMessage("form.errors.passwordMismatch", null, locale));
-        }
 
-        if (password.length() < 10) {
+        if (password.length() < 10)
             passwordField.addError(messageSource.getMessage("form.errors.passwordIsShort", null, locale));
-        }
         if (!FormValidation.hasUppercase(password, 1))
             passwordField.addError(messageSource.getMessage("form.errors.passwordNoUppercase", null, locale));
-        if (!FormValidation.hasDigits(password, 1)) passwordField.addError(messageSource.getMessage("form.errors.passwordNoDigit", null, locale));
+        if (!FormValidation.hasDigits(password, 1))
+            passwordField.addError(messageSource.getMessage("form.errors.passwordNoDigit", null, locale));
         if (!FormValidation.hasSpecialChars(password, 1))
             passwordField.addError(messageSource.getMessage("form.errors.passwordNoSpecialCharacter", null, locale));
         //endregion
@@ -173,7 +193,8 @@ public class AuthController {
 
                 card = new CreditCard(cardNum, expiration, cardSecCode, cardName);
 
-                if (card.isExpired()) form.addError(messageSource.getMessage("form.errors.cardAlreadyExpired", null, locale));
+                if (card.isExpired())
+                    form.addError(messageSource.getMessage("form.errors.cardAlreadyExpired", null, locale));
             } catch (IllegalArgumentException e) {
                 form.addError(messageSource.getMessage("form.errors.cardRecheck", null, locale));
             } catch (InvalidCardNumberException e) {
@@ -190,7 +211,7 @@ public class AuthController {
         }
 
         String hashedPw = BCrypt.hashpw(password, BCrypt.gensalt(14));
-        User newUser = new User(email, hashedPw, displayName);
+        User newUser = new User(email, hashedPw, displayName, LocalDate.now(), LocalDate.now().plusMonths(12));
 
         userDao.createUser(newUser);
         log.info("Created a new user '{}'", newUser.getEmail());
@@ -199,10 +220,17 @@ public class AuthController {
         return "redirect:/";
     }
 
+    /**
+     * Log out handler.
+     * Removes the user object from the session.
+     */
     @GetMapping("/auth/logout")
-    public RedirectView logoutUser(HttpSession httpSession) {
-        httpSession.removeAttribute("user");
-
-        return new RedirectView("/");
+    public String logoutUser(HttpSession httpSession) {
+        User user = (User) httpSession.getAttribute("user");
+        if (user != null) {
+            httpSession.removeAttribute("user");
+            log.info("User logged out {}", user.getEmail());
+        }
+        return "redirect:/";
     }
 }

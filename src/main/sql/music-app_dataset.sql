@@ -23,11 +23,14 @@ INSERT INTO song (artist_id, title, rating) VALUES
                                                 (4, 'Bohemian Rhapsody', 5),
                                                 (5, 'Gimme Shelter', 5);
 
-INSERT INTO users (email, password, display_name) VALUES
+INSERT INTO users (email, password, display_name, sub_since, sub_end) VALUES
                                                          # All passwords are "Password"
-                                                         ('user1@example.com', '$2a$14$Sci/QKCO4xEAqh2O3/PSk.XGWdEF.Jxy/AB0cDCkGWu19Gz1d3gPq', 'User One'),
-                                                         ('user2@example.com', '$2a$14$IUvGQl20ZUAZ78zB./nYVODp9yrq9UtMkCvkx7kh0kBCpU1bg9vo2', 'User Two'),
-                                                         ('user3@example.com', '$2a$14$BYxz1MGCgDNqzkg7wRJtveJHTdAeX1FzBaXVx/YAK8NAzKkNy8Xf2', 'User Three');
+                                                         # User 1 & User 2 - Valid Subscription
+                                                         ('user1@example.com', '$2a$14$Sci/QKCO4xEAqh2O3/PSk.XGWdEF.Jxy/AB0cDCkGWu19Gz1d3gPq', 'User One', CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 1 YEAR)),
+                                                         ('user2@example.com', '$2a$14$IUvGQl20ZUAZ78zB./nYVODp9yrq9UtMkCvkx7kh0kBCpU1bg9vo2', 'User Two', DATE_SUB(CURRENT_DATE, INTERVAL 6 MONTH), DATE_ADD(DATE_SUB(CURRENT_DATE, INTERVAL 6 MONTH), INTERVAL 1 YEAR)),
+                                                         # User 3 - Expired Subscription
+                                                         ('user3@example.com', '$2a$14$BYxz1MGCgDNqzkg7wRJtveJHTdAeX1FzBaXVx/YAK8NAzKkNy8Xf2', 'User Three', DATE_SUB(CURRENT_DATE, INTERVAL 13 MONTH), DATE_ADD(DATE_SUB(CURRENT_DATE, INTERVAL 13 MONTH), INTERVAL 1 YEAR));
+
 
 INSERT INTO song_ratings (user_id, song_id, rating_value) VALUES
                                                               (1, 1, 5),

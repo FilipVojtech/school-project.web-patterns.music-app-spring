@@ -93,7 +93,7 @@ public class RatingController {
         } else {
             model.addAttribute("success");
         }
-        return "pages/rating";
+        return "redirect:/rating";
     }
 
     @GetMapping("/mostPopularSong")
