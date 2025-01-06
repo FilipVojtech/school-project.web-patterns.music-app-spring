@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html th:lang="${#locale.language}">
+<!-- Head -->
+<div th:replace="~{fragments/structure :: head (pageTitle = 'Evil Spotify', formStyle = false)}"></div>
+<body>
+<!-- Header -->
+<header th:replace="~{fragments/structure :: header}"></header>
+<main>
+    <section class="container">
+
+        <!-- Search Section -->
+        <h1>Search</h1>
+        <form action="/music" method="get" class="search-form">
+            <input type="text" name="query" th:value="${query}" placeholder="Search by title, artist, or album" required>
+            <button type="submit" class="btn">Search</button>
+        </form>
+
+        <!-- Songs Section -->
+        <h1>Songs</h1>
+        <ul>
+            <li th:each="song : ${songs}">
+                <div>
+                    <h3 th:text="${song.title}">Song Name</h3>
+                    <p>Artist: <span th:text="${song.artistName}">Artist</span></p>
+                    <p>Album: <span th:text="${song.albumName}">Album</span></p>
+                </div>
+            </li>
+        </ul>
+
+        <!-- Artists Section -->
+        <h1>Artists</h1>
+        <ul>
+            <li th:each="artist : ${artists}">
+                <div>
+                    <h3 th:text="${artist.name}">Artist Name</h3>
+                    <a th:href="@{/music/artists/{id}/albums(id=${artist.id})}">View Albums</a>
+                </div>
+            </li>
+        </ul>
+
+        <!-- Albums Section -->
+        <h1>Albums</h1>
+        <ul>
+            <li th:each="album : ${albums}">
+                <div>
+                    <h3 th:text="${album.title}">Album Name</h3>
+                    <p>Artist: <span th:text="${album.artistName}">Artist</span></p>
+                    <p>Release Date: <span th:text="${album.releaseDate}">Release Date</span></p>
+                    <a th:href="@{/music/albums/{id}/songs(id=${album.id})}">View Songs</a>
+                </div>
+            </li>
+        </ul>
+
+        <!-- Albums by Artist Section -->
+        <div th:if="${artistAlbums != null}">
+            <h1 th:text="'Albums by ' + ${selectedArtistName}">Albums by Artist</h1>
+            <ul>
+                <li th:each="album : ${artistAlbums}">
+                    <div>
+                        <h3 th:text="${album.title}">Album Name</h3>
+                        <a th:href="@{/music/albums/{id}/songs(id=${album.id})}">View Songs</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Songs by Album Section -->
+        <div th:if="${albumName != null}">
+            <h1 th:text="'Songs in ' + ${albumName}">Songs in Album</h1>
+            <ul>
+                <li th:each="song : ${songs}">
+                    <div>
+                        <h3 th:text="${song.title}">Song Name</h3>
+                        <p>Artist: <span th:text="${song.artistName}">Artist</span></p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+    </section>
+</main>
+</body>
+</html>
