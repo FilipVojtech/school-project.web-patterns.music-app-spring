@@ -32,7 +32,12 @@ public class SongDaoImpl extends MySQLDao implements SongDao {
         List<Song> songs = new ArrayList<>();
 
         Connection conn = super.getConnection();
-        String sql = "SELECT * FROM songs WHERE album_id = ?";
+        String sql = "SELECT s.title AS title, ar.name AS artist, al.title AS album\n" +
+                "FROM album_songs\n" +
+                "JOIN music_app.song s on s.id = album_songs.song_id\n" +
+                "JOIN music_app.artist ar on ar.id = s.artist_id\n" +
+                "JOIN music_app.album al on al.id = album_songs.album_id\n" +
+                "WHERE album_id = ?;";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, albumId);
@@ -163,7 +168,5 @@ public class SongDaoImpl extends MySQLDao implements SongDao {
 
         return songName; // Will return null if no songs exist
     }
-
-
 
 }
