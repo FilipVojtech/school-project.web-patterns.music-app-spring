@@ -19,6 +19,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Alex Clinton
+ */
+
 @Controller
 @RequestMapping("/playlists") // Base path for playlist-specific actions
 public class PlaylistController {

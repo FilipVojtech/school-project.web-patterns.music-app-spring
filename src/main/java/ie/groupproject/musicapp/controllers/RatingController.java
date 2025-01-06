@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * @author Alex Clinton
+ */
+
 @Controller
 public class RatingController {
 
