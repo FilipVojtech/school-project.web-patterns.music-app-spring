@@ -77,11 +77,11 @@ public class Form {
      * Check is field is valid.
      *
      * @param fieldName Name of the field
-     * @return True if the field is valid. False if the field was not found or is not valid.
+     * @return True if the field is valid. False if the field is not valid.
      */
     public boolean isValid(String fieldName) {
         var field = formFields.get(fieldName);
-        if (field == null) return false;
+        if (field == null) return true;
         return field.isValid();
     }
 
