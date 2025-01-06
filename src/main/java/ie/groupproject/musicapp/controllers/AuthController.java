@@ -68,6 +68,7 @@ public class AuthController {
 
         if (user != null && BCrypt.checkpw(password, user.getPassword())) {
             session.setAttribute("user", user);
+            log.info("User has been logged in {}", user.getEmail());
             return "redirect:/";
         } else {
             form.addError(messageSource.getMessage("form.errors.incorrectEmailOrPassword", null, locale));
