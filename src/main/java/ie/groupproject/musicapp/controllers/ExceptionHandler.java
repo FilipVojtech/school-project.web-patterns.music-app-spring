@@ -43,13 +43,26 @@ public class ExceptionHandler {
         return "pages/error";
     }
 
+    @org.springframework.web.bind.annotation.ExceptionHandler(value = NullPointerException.class)
+    public String nullPointerHandler(Model model, Locale locale) {
+        log.error("Null pointer exception on '{}'", request.getRequestURL());
+        return return500(model, locale);
+    }
+
     @org.springframework.web.bind.annotation.ExceptionHandler(value = Exception.class)
-    public String allOtherExceptionHandler(Model model, Exception ex) {
+    public String allOtherExceptionHandler(Model model, Exception ex, Locale locale) {
+        log.error("An exception happened at '{}' with message '{}'\n{}", request.getRequestURL(), ex.getMessage(), ex.getStackTrace());
+        return return500(model, locale);
+    }
+
+    /**
+     * Generic code 500 message
+     */
+    private String return500(Model model, Locale locale) {
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        model.addAttribute("errType", ex.getClass());
-        model.addAttribute("err", ex.getMessage());
-        model.addAttribute("code", "400");
-        log.error("An exception happened at '{}'", request.getRequestURL());
+        model.addAttribute("errorType", messageSource.getMessage("error.500", null, locale));
+        model.addAttribute("error", messageSource.getMessage("error.500Message", null, locale));
+        model.addAttribute("code", "500");
         return "pages/error";
     }
 }
