@@ -87,7 +87,7 @@
 <header th:replace="~{fragments/structure :: header}"></header>
 <main>
     <section class="container">
-        <h2 th:text="#{page.playlist.Playlist}">Playlists</h2>
+        <h2 th:text="#{page.playlist.Playlist.Name}">Playlists</h2>
 
         <!-- Create Playlist Form -->
         <div class="mb-6 p-5 border-2 rounded-lg shadow">
@@ -175,7 +175,7 @@
                 <h2 th:text="#{page.playlist.Search.For.A.Song}">Search for a Song</h2>
                 <form action="/playlists/searchPlaylistSongs" method="get" class="search-form">
                     <input type="text" name="query" placeholder="Search songs by name" required>
-                    <button type="submit" class="btn" th:text="#{page.playlist.Search}">Search</button>
+                    <button type="submit" class="btn" th:text="#{page.playlist.Search.For.A.Song}">Search</button>
                 </form>
             </div>
 
