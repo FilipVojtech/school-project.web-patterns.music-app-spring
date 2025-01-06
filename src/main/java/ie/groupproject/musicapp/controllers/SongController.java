@@ -29,6 +29,16 @@ public class SongController {
         this.albumDao = new AlbumDaoImpl("database.properties");
     }
 
+
+    /**
+     * Handles the request to search and view music (songs, albums, artists) based on a query string
+     * @param query The search query string provided by the user
+     * @param model The Spring model to which the results are added for rendering the view
+     * @param session The current HTTP session
+     * @return The name of the view template to render (in this case, "pages/songs")
+     * @throws SQLException If there is a database error while fetching the data
+     */
+
     @GetMapping("/viewMusic")
     public String viewMusic(@RequestParam String query, Model model, HttpSession session) throws SQLException {
         List<Artist> artists = artistDao.getAllArtists();
@@ -42,8 +52,13 @@ public class SongController {
         return "pages/songs";
     }
 
+
     /**
-     * View albums by a specific artist.
+     * Handles the request to view albums by a specific artist identified by their artist ID
+     * @param artistId The ID of the artist whose albums are to be displayed
+     * @param model The Spring model to which the album data is added for rendering the view
+     * @return The name of the view template to render
+     * @throws SQLException If there is a database error while fetching the data
      */
     @GetMapping("/artists/{artistId}")
     public String viewAlbumsByArtist(@PathVariable int artistId, Model model) throws SQLException {
@@ -63,6 +78,13 @@ public class SongController {
     }
 
 
+    /**
+     * Handles the request to view songs within a specific album identified by its album ID
+     * @param albumId The ID of the album whose songs are to be displayed
+     * @param model The Spring model to which the song data is added for rendering the view
+     * @return The name of the view template to render
+     * @throws SQLException If there is a database error while fetching the data
+     */
     @GetMapping("/albums/{albumId}")
     public String viewSongsByAlbum(@PathVariable int albumId, Model model) throws SQLException {
         List<Song> songs = songDao.getSongsByAlbum(albumId);
@@ -77,7 +99,7 @@ public class SongController {
 
         model.addAttribute("songs", songs);
         model.addAttribute("albumName", album != null ? album.getTitle() : "Unknown Album");
-        return "music-view";
+        return "pages/songs";
     }
 
 }
