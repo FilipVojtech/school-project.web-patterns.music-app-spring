@@ -152,6 +152,7 @@ public class PlaylistController {
 
         for (Song song : songs) {
             Map<String, String> songDetail = new HashMap<>();
+            songDetail.put("id", Integer.toString(song.getId()));
             songDetail.put("title", song.getTitle());
             songDetail.put("artist", songDao.getArtistName(song.getArtist_id()));
             songDetails.add(songDetail);

@@ -179,20 +179,6 @@
                 </form>
             </div>
 
-            <!-- Display Search Results (after search) -->
-            <div class="mb-6 p-5 border-2 rounded-lg shadow">
-                <h2 th:text="#{page.playlist.Search.Results}" >Search Results</h2>
-                <ul class="song-list">
-                    <li th:each="song : ${searchResults}">
-                        <div class="song-item">
-                            <h3 th:text="${song.getTitle()}" >Song Name</h3>
-                            <p >Artist's Id: <span th:text="${song.getArtist_id()}">Artist Name</span></p>
-
-                        </div>
-                    </li>
-                </ul>
-            </div>
-
             <!-- Display Song Information -->
             <div th:if="${searchResults != null}" class="mb-6 p-5 border-2 rounded-lg shadow">
                 <h3 th:text="#{page.playlist.Search.Results}">Search Results</h3>
@@ -201,12 +187,19 @@
                     <tr>
                         <th th:text="#{page.playlist.Title}">Title</th>
                         <th th:text="#{page.playlist.Artists}">Artist</th>
+                        <th ></th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="song : ${searchResults}">
                         <td th:text="${song.title}">Song Title</td>
                         <td th:text="${song.artist_id}">Artist Name</td>
+                        <td ><form action="playlists/addSong">
+                            <select onchange="this.form.submit()" name="playlistId">
+                                <option th:each="playlist : ${playlists}" th:text="${playlist.name}" th:value="${playlist.id}">
+                                </option>
+                            </select>
+                        </form></td>
                     </tr>
                     </tbody>
                 </table>
