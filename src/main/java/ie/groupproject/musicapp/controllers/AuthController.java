@@ -201,9 +201,12 @@ public class AuthController {
     }
 
     @GetMapping("/auth/logout")
-    public RedirectView logoutUser(HttpSession httpSession) {
-        httpSession.removeAttribute("user");
-
-        return new RedirectView("/");
+    public String logoutUser(HttpSession httpSession) {
+        User user = (User) httpSession.getAttribute("user");
+        if (user != null) {
+            httpSession.removeAttribute("user");
+            log.info("User logged out {}", user.getEmail());
+        }
+        return "redirect:/";
     }
 }
