@@ -4,6 +4,9 @@ import lombok.*;
 
 import java.util.*;
 
+/**
+ * @author Filip Vojtěch
+ */
 @NoArgsConstructor
 public class Form {
     private final Map<String, FormField> formFields = new HashMap<>();

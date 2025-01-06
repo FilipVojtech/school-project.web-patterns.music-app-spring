@@ -23,6 +23,8 @@ import java.util.Locale;
 
 /**
  * Routes in this controller are all guarded so that if unauthenticated user visits the page, they are redirected to the login page.
+ *
+ * @author Filip Vojtěch
  */
 @Controller
 public class UserController {

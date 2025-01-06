@@ -25,6 +25,9 @@ import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 
+/**
+ * @author Filip Vojtěch
+ */
 @Controller
 @Slf4j
 public class AuthController {

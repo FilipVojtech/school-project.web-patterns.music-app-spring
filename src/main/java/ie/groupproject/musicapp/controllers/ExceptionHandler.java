@@ -10,6 +10,9 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.Locale;
 
+/**
+ * @author Filip Vojtěch
+ */
 @ControllerAdvice
 @Slf4j
 public class ExceptionHandler {
