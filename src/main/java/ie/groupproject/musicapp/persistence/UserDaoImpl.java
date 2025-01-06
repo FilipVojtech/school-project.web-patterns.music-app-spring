@@ -60,7 +60,7 @@ public class UserDaoImpl extends MySQLDao implements UserDao {
                 throw new RecordNotFound(MessageFormat.format("Couldn''t find user by that ID ({0})", id));
             }
         } catch (SQLException e) {
-            System.out.println("Error while fetching user.");
+            log.error("Error while fetching user.");
             e.printStackTrace();
         }
         return null;
@@ -97,7 +97,7 @@ public class UserDaoImpl extends MySQLDao implements UserDao {
                 throw new RecordNotFound(MessageFormat.format("Couldn''t find user with that email ({0})", email));
             }
         } catch (SQLException e) {
-            System.out.println("Error while fetching user.");
+            log.error("Error while fetching user.");
         }
         return null;
     }
@@ -119,7 +119,6 @@ public class UserDaoImpl extends MySQLDao implements UserDao {
         } catch (RecordNotFound ignored) {
         }
 
-
         try (Connection con = super.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
@@ -129,7 +128,7 @@ public class UserDaoImpl extends MySQLDao implements UserDao {
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.out.println("Couldn't create user.");
+            log.error("Couldn't create user.");
         }
         return false;
     }
@@ -144,7 +143,8 @@ public class UserDaoImpl extends MySQLDao implements UserDao {
     @Override
     public boolean updateUser(@NonNull User newUserData) {
         if (newUserData.getId() == 0) {
-            System.out.println("Cannot update user. ID is not set.");
+            log.error("Cannot update user. ID is not set.");
+            return false;
         }
         final var sql = "UPDATE users SET display_name = ?, email = ?, password = ?, sub_since = ?, sub_end = ? WHERE id = ?";
 
