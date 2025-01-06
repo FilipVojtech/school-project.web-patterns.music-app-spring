@@ -53,7 +53,6 @@ public class PlaylistController {
 
         int userId = currentUser.getId();
         List<Playlist> userPlaylists = playlistDao.getUserPlaylists(userId);
-
         List<Playlist> publicPlaylists = playlistDao.getPublicPlaylists();
         List<Playlist> userPublicPlaylists = new ArrayList<>();
         List<Playlist> otherPublicPlaylists = new ArrayList<>();
@@ -168,6 +167,24 @@ public class PlaylistController {
         if (currentUser == null) {
             return "redirect:/login";
         }
+
+        int userId = currentUser.getId();
+        List<Playlist> userPlaylists = playlistDao.getUserPlaylists(userId);
+        List<Playlist> publicPlaylists = playlistDao.getPublicPlaylists();
+        List<Playlist> userPublicPlaylists = new ArrayList<>();
+        List<Playlist> otherPublicPlaylists = new ArrayList<>();
+
+        for (Playlist playlist : publicPlaylists) {
+            if (playlist.getUserId() == userId) {
+                userPublicPlaylists.add(playlist);
+            } else {
+                otherPublicPlaylists.add(playlist);
+            }
+        }
+
+        model.addAttribute("playlists", userPlaylists);
+        model.addAttribute("userPublicPlaylists", userPublicPlaylists);
+        model.addAttribute("otherPublicPlaylists", otherPublicPlaylists);
 
         // Fetch songs matching the keyword
         List<Song> searchResults = songDao.searchSongs(query);

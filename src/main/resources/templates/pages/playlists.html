@@ -194,12 +194,15 @@
                     <tr th:each="song : ${searchResults}">
                         <td th:text="${song.title}">Song Title</td>
                         <td th:text="${song.artist_id}">Artist Name</td>
-                        <td ><form action="playlists/addSong">
-                            <select onchange="this.form.submit()" name="playlistId">
-                                <option th:each="playlist : ${playlists}" th:text="${playlist.name}" th:value="${playlist.id}">
-                                </option>
-                            </select>
-                        </form></td>
+                        <td >
+                            <form action="/playlists/addSong" method="post">
+                                <input type="hidden" name="songId" th:value="${song.id}">
+                                <select onchange="this.form.submit()" name="playlistId">
+                                    <option value="" selected disabled>Select a playlist to add to</option>
+                                    <option th:each="playlist : ${playlists}" th:text="${playlist.name}" th:value="${playlist.getPlaylistId()}"></option>
+                                </select>
+                            </form>
+                        </td>
                     </tr>
                     </tbody>
                 </table>
