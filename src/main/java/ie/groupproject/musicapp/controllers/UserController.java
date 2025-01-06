@@ -21,6 +21,9 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.Locale;
 
+/**
+ * Routes in this controller are all guarded so that if unauthenticated user visits the page, they are redirected to the login page.
+ */
 @Controller
 public class UserController {
     private final MessageSource messageSource;
@@ -31,11 +34,17 @@ public class UserController {
         this.userDao = new UserDaoImpl("database.properties");
     }
 
+    /**
+     * Redirect to a valid path if only the /me part was supplied
+     */
     @GetMapping("/me")
     public String redirectToAccount() {
         return "redirect:/me/account";
     }
 
+    /**
+     * Account management page
+     */
     @GetMapping("/me/account")
     public String userPage(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
@@ -58,6 +67,9 @@ public class UserController {
         return "pages/user/account";
     }
 
+    /**
+     * Subscription page
+     */
     @GetMapping("/me/subscription")
     public String subscriptionPage(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
@@ -83,6 +95,10 @@ public class UserController {
         return "pages/user/subscription";
     }
 
+    /**
+     * Display name form handler.
+     * Changes the display name only if it differs from the current one
+     */
     @PostMapping("/me/displayName")
     public String updateDisplayName(
             HttpSession session,
@@ -114,6 +130,10 @@ public class UserController {
         return "redirect:/me";
     }
 
+    /**
+     * Email form handler.
+     * Updates the email address only if the new one differs from the old one.
+     */
     @PostMapping("/me/email")
     public String updateEmail(
             HttpSession session,
@@ -145,6 +165,11 @@ public class UserController {
         return "redirect:/me";
     }
 
+    /**
+     * Password change form handler.
+     * Checks that the current password matches, then if the two new passwords match.
+     * Finally checks that the new password is strong enough.
+     */
     @PostMapping("/me/password")
     public String updatePassword(
             HttpSession session,
@@ -190,6 +215,10 @@ public class UserController {
         return "redirect:/me";
     }
 
+    /**
+     * Renew subscription form handler.
+     * Checks the card and if it is valid and extends the subscription by one year.
+     */
     @PostMapping("/me/renewSubscription")
     public String renewSubscription(
             HttpSession session,
