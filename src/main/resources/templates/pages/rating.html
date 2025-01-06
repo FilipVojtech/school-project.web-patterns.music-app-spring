@@ -151,16 +151,26 @@
             <!-- Top Rated Song -->
             <div th:if="${topRatedSong != null}">
                 <h3 th:text="#{page.rating.Top.Rated.Song}">Top Rated Song</h3>
-                <p th:text="#{page.rating.Title}">Title: <span th:text="${topRatedSong.title}">Top Rated Song</span></p>
-                <p th:text="#{page.rating.Artists.Id}">Artist ID: <span th:text="${topRatedSong.artist_id}">Artist</span></p>
+                <div class="flex gap-2">
+                    <p th:text="#{page.rating.Title}">Title: </p><span th:text="${topRatedSong.title}"></span>
+                </div>
+                <div class="flex gap-2">
+                    <p th:text="#{page.rating.Artists.Id}">Artist ID: </p><span th:text="${topRatedSong.artist_id}"></span>
+                </div>
             </div>
 
             <!-- Most Popular Song -->
                 <h2 th:text="#{page.rating.Most.Popular.Song}">Most Popular Song</h2>
                 <div th:if="${mostPopularSong != null}">
-                    <p th:text="#{page.rating.Title}" ><strong>Title:</strong> <span th:text="${mostPopularSong.title}">Song Title</span></p>
-                    <p th:text="#{page.rating.Artists.Id}" ><strong>Artist ID:</strong> <span th:text="${mostPopularSong.artist_id}">Artist ID</span></p>
-                    <p th:text="#{page.rating.Playlist.Count}" ><strong>Playlist Count:</strong> <span th:text="${mostPopularSong.playlistCount != null ? mostPopularSong.playlistCount : 'N/A'}">N/A</span></p>
+                    <div class="flex gap-2">
+                        <p th:text="#{page.rating.Title}" ><strong>Title:</strong> </p><span th:text="${mostPopularSong.title}">Song Title</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <p th:text="#{page.rating.Artists.Id}" ><strong>Artist ID:</strong> </p><span th:text="${mostPopularSong.artist_id}">Artist ID</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <p th:text="#{page.rating.Playlist.Count}" ><strong>Playlist Count:</strong></p> <span th:text="${mostPopularSong.playlistCount != null ? mostPopularSong.playlistCount : 'N/A'}">N/A</span>
+                    </div>
                 </div>
                 <div th:if="${mostPopularSong == null}">
                     <p>No most popular song available.</p>
