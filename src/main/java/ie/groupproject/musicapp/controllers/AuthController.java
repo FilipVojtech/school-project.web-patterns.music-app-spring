@@ -1,6 +1,6 @@
 package ie.groupproject.musicapp.controllers;
 
-import ie.groupproject.musicapp.business.CreditCard;
+import ie.groupproject.musicapp.util.CreditCard;
 import ie.groupproject.musicapp.business.User;
 import ie.groupproject.musicapp.business.exceptions.InvalidCardNumberException;
 import ie.groupproject.musicapp.persistence.UserDao;
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.view.RedirectView;
 
 import java.math.BigInteger;
 import java.time.LocalDate;

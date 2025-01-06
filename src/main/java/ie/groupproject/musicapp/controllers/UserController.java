@@ -1,6 +1,6 @@
 package ie.groupproject.musicapp.controllers;
 
-import ie.groupproject.musicapp.business.CreditCard;
+import ie.groupproject.musicapp.util.CreditCard;
 import ie.groupproject.musicapp.business.User;
 import ie.groupproject.musicapp.business.exceptions.InvalidCardNumberException;
 import ie.groupproject.musicapp.persistence.UserDao;
