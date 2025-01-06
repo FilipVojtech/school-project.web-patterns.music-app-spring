@@ -122,7 +122,7 @@
                 <tbody>
                 <tr th:each="playlist : ${playlists}">
                     <td>
-                        <span th:text="#{page.playlist.Playlist.Name}" th:id="'playlist-name-' + ${playlist.playlistId}">Playlist Name</span>
+                        <span th:text="${playlist.getName()}" th:id="'playlist-name-' + ${playlist.playlistId}">Playlist Name</span>
                     </td>
                     <td th:text="${playlist.isPublic ? 'Public' : 'Private'}" >Visibility</td>
                     <td>
@@ -186,7 +186,7 @@
                     <li th:each="song : ${searchResults}">
                         <div class="song-item">
                             <h3 th:text="${song.getTitle()}" >Song Name</h3>
-                            <p >Artist's Id: <span th:text="${song.getArtist_id()} #{page.playlist.Artist.Name}">Artist Name</span></p>
+                            <p >Artist's Id: <span th:text="${song.getArtist_id()}">Artist Name</span></p>
 
                         </div>
                     </li>
@@ -195,18 +195,18 @@
 
             <!-- Display Song Information -->
             <div th:if="${searchResults != null}" class="mb-6 p-5 border-2 rounded-lg shadow">
-                <h3 th:text="${page.playlist.Search.Results}">Search Results</h3>
+                <h3 th:text="#{page.playlist.Search.Results}">Search Results</h3>
                 <table class="table">
                     <thead>
                     <tr>
-                        <th th:text="${page.playlist.Title}">Title</th>
-                        <th th:text="${page.playlist.Artists}">Artist</th>
+                        <th th:text="#{page.playlist.Title}">Title</th>
+                        <th th:text="#{page.playlist.Artists}">Artist</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="song : ${searchResults}">
                         <td th:text="${song.title}">Song Title</td>
-                        <td th:text="${song.artist}">Artist Name</td>
+                        <td th:text="${song.artist_id}">Artist Name</td>
                     </tr>
                     </tbody>
                 </table>
