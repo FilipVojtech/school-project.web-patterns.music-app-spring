@@ -13,6 +13,13 @@ public class Form {
     @Getter
     private final Queue<String> formErrors = new LinkedList<>();
 
+    /**
+     * Add field to the form.
+     *
+     * @param name  Name of the field (as name HTML attr.).
+     * @param value Value of the field.
+     * @return Reference to the newly created field.
+     */
     public FormField addField(String name, String value) {
         FormField field = new FormField(name, value);
         formFields.put(name, field);
@@ -23,7 +30,7 @@ public class Form {
      * Get a field of the form.
      *
      * @param name Name of the field.
-     * @return The field with the name or null if that field is not in the form.
+     * @return The field with the name or null if the field is not in the form.
      */
     public FormField getField(String name) {
         return formFields.get(name);
@@ -43,9 +50,13 @@ public class Form {
      *
      * @param fieldName Name of the field
      * @param message   Error message
+     * @return True if the error was added, false otherwise.
      */
-    public void addError(String fieldName, String message) {
-        formFields.get(fieldName).addError(message);
+    public boolean addError(String fieldName, String message) {
+        var field = formFields.get(fieldName);
+        if (field == null) return false;
+        field.addError(message);
+        return true;
     }
 
     /**
@@ -66,11 +77,11 @@ public class Form {
      * Check is field is valid.
      *
      * @param fieldName Name of the field
-     * @return True if the field is valid or that field does not exist. False otherwise.
+     * @return True if the field is valid. False if the field was not found or is not valid.
      */
     public boolean isValid(String fieldName) {
         var field = formFields.get(fieldName);
-        if (field == null) return true;
+        if (field == null) return false;
         return field.isValid();
     }
 
@@ -78,7 +89,7 @@ public class Form {
      * Get errors for a field
      *
      * @param fieldName Name of the field
-     * @return Collection of all the errors for the field. Empty collection if there are no errors. Null if that field does not exist.
+     * @return Collection of all the errors for the field (if any). Null if that field does not exist.
      */
     public Collection<String> getErrors(String fieldName) {
         var field = formFields.get(fieldName);
@@ -102,7 +113,7 @@ public class Form {
      * Get a value from a field.
      *
      * @param fieldName Name of the field.
-     * @return Value of the field. Empty string if no value is present.
+     * @return Value of the field. Empty string if no value or the field does not exist.
      */
     public String getValue(String fieldName) {
         var field = formFields.get(fieldName);
@@ -110,18 +121,15 @@ public class Form {
         return field.value;
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Form{");
-        sb.append("formFields=").append(formFields);
-        sb.append(", formErrors=").append(formErrors);
-        sb.append('}');
-        return sb.toString();
-    }
-
+    /**
+     * Object representing the form field.
+     */
     @NoArgsConstructor
     @Getter
-    public class FormField {
+    public static class FormField {
+        /**
+         * HTML name attribute
+         */
         @Setter
         @NonNull
         private String name;
@@ -151,16 +159,6 @@ public class Form {
          */
         public boolean isValid() {
             return errorMessages.isEmpty();
-        }
-
-        @Override
-        public String toString() {
-            final StringBuilder sb = new StringBuilder("FormField{");
-            sb.append("name='").append(name).append('\'');
-            sb.append(", value='").append(value).append('\'');
-            sb.append(", errorMessages=").append(errorMessages);
-            sb.append('}');
-            return sb.toString();
         }
     }
 }
