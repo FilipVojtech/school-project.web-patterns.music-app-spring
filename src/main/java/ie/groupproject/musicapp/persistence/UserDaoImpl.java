@@ -30,6 +30,13 @@ public class UserDaoImpl extends MySQLDao implements UserDao {
         super(propertiesFilename);
     }
 
+    /**
+     * Get a user by ID.
+     *
+     * @param id ID to look up by.
+     * @return The user data.
+     * @throws RecordNotFound If the user could not be found.
+     */
     @Override
     public User getUser(int id) throws RecordNotFound {
         final var sql = "SELECT * FROM users WHERE id = ?";
@@ -53,12 +60,19 @@ public class UserDaoImpl extends MySQLDao implements UserDao {
                 throw new RecordNotFound(MessageFormat.format("Couldn''t find user by that ID ({0})", id));
             }
         } catch (SQLException e) {
-            System.out.println("Error while fetching user.");
+            log.error("Error while fetching user.");
             e.printStackTrace();
         }
         return null;
     }
 
+    /**
+     * Gets a user by their email.
+     *
+     * @param email Email to look up by.
+     * @return The user.
+     * @throws RecordNotFound If the user could not be found.
+     */
     @Override
     public User getUserByEmail(@NonNull String email) throws RecordNotFound {
         final var sql = "SELECT * FROM users WHERE email = ?";
@@ -83,11 +97,18 @@ public class UserDaoImpl extends MySQLDao implements UserDao {
                 throw new RecordNotFound(MessageFormat.format("Couldn''t find user with that email ({0})", email));
             }
         } catch (SQLException e) {
-            System.out.println("Error while fetching user.");
+            log.error("Error while fetching user.");
         }
         return null;
     }
 
+    /**
+     * Creates a user in the DB.
+     *
+     * @param user The new user data
+     * @return True if the user was created, false otherwise.
+     * @throws EmailAddressAlreadyUsed If the email is already in use.
+     */
     @Override
     public boolean createUser(@NonNull User user) throws EmailAddressAlreadyUsed {
         final var sql = "INSERT INTO users (email, password, display_name) VALUE (?, ?, ?)";
@@ -98,7 +119,6 @@ public class UserDaoImpl extends MySQLDao implements UserDao {
         } catch (RecordNotFound ignored) {
         }
 
-
         try (Connection con = super.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
@@ -108,15 +128,23 @@ public class UserDaoImpl extends MySQLDao implements UserDao {
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.out.println("Couldn't create user.");
+            log.error("Couldn't create user.");
         }
         return false;
     }
 
+    /**
+     * Updates the DB user with the new details using the ID of the user.
+     * If the ID is not set, the user is not updated.
+     *
+     * @param newUserData Data to update the user.
+     * @return True if the operation succeeded, false otherwise.
+     */
     @Override
     public boolean updateUser(@NonNull User newUserData) {
         if (newUserData.getId() == 0) {
-            System.out.println("Cannot update user. ID is not set.");
+            log.error("Cannot update user. ID is not set.");
+            return false;
         }
         final var sql = "UPDATE users SET display_name = ?, email = ?, password = ?, sub_since = ?, sub_end = ? WHERE id = ?";
 

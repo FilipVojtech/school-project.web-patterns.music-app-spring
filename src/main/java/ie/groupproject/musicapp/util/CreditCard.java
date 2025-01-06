@@ -1,4 +1,4 @@
-package ie.groupproject.musicapp.business;
+package ie.groupproject.musicapp.util;
 
 import ie.groupproject.musicapp.business.exceptions.InvalidCardNumberException;
 import ie.groupproject.musicapp.business.exceptions.UnsupportedCardIssuerException;

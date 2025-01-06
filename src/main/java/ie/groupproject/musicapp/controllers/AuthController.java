@@ -1,6 +1,6 @@
 package ie.groupproject.musicapp.controllers;
 
-import ie.groupproject.musicapp.business.CreditCard;
+import ie.groupproject.musicapp.util.CreditCard;
 import ie.groupproject.musicapp.business.User;
 import ie.groupproject.musicapp.business.exceptions.InvalidCardNumberException;
 import ie.groupproject.musicapp.persistence.UserDao;
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.view.RedirectView;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
@@ -32,6 +31,10 @@ public class AuthController {
     @Autowired
     MessageSource messageSource;
 
+    /**
+     * Login page.
+     * If the user is already logged in, then it redirects them to the home page.
+     */
     @GetMapping("/login")
     public String loginPage(Model model, HttpSession session) {
         if (session.getAttribute("user") != null) return "redirect:/";
@@ -39,6 +42,10 @@ public class AuthController {
         return "pages/auth/login";
     }
 
+    /**
+     * Login form handler.
+     * Checks if the user with the provided email exists. If they do, check the password and log them in saving the user details to the session.
+     */
     @PostMapping("/auth/login")
     public String loginFormHandler(
             HttpSession session,
@@ -68,6 +75,7 @@ public class AuthController {
 
         if (user != null && BCrypt.checkpw(password, user.getPassword())) {
             session.setAttribute("user", user);
+            log.info("User has been logged in {}", user.getEmail());
             return "redirect:/";
         } else {
             form.addError(messageSource.getMessage("form.errors.incorrectEmailOrPassword", null, locale));
@@ -76,6 +84,10 @@ public class AuthController {
 
     }
 
+    /**
+     * Registration page.
+     * If the user is already logged in, it redirects them to the home page.
+     */
     @GetMapping("/register")
     public String registerPage(Model model, HttpSession session) {
         if (session.getAttribute("user") != null) return "redirect:/";
@@ -89,6 +101,11 @@ public class AuthController {
         return "pages/auth/register";
     }
 
+    /**
+     * Registration form handler.
+     * Checks the user details including the card are valid.
+     * If everything is valid, then that new user is created in the database and saved to the session.
+     */
     @PostMapping("/auth/register")
     public String registerFormHandler(
             HttpSession session,
@@ -200,10 +217,17 @@ public class AuthController {
         return "redirect:/";
     }
 
+    /**
+     * Log out handler.
+     * Removes the user object from the session.
+     */
     @GetMapping("/auth/logout")
-    public RedirectView logoutUser(HttpSession httpSession) {
-        httpSession.removeAttribute("user");
-
-        return new RedirectView("/");
+    public String logoutUser(HttpSession httpSession) {
+        User user = (User) httpSession.getAttribute("user");
+        if (user != null) {
+            httpSession.removeAttribute("user");
+            log.info("User logged out {}", user.getEmail());
+        }
+        return "redirect:/";
     }
 }
